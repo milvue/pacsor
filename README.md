@@ -40,7 +40,7 @@ The field `CALLBACK_URLS` in the `core` section allows PACSOR to send results to
 > If you create an other storescu service, you will need to edit `docker-compose.yml`  and add manually a new service. You will need also to set the `PACS_IP`, `PACS_PORT`, `PACS_AET` in order to fit the needed configuration.
   
 
-## Running PACSOR 2
+## Running PACSOR
 
 To operate PACSOR, the following Docker Compose commands are used:
 
