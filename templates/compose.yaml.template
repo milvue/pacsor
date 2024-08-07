@@ -1,0 +1,14 @@
+version: "3.4"
+include:
+  - path:
+    - pacsor/compose.pacsor.yaml
+
+    # Multi-scu
+    #- pacsor/compose.multi-scu.pacsor.yaml
+
+    # Multi-core
+    #- pacsor/compose.multicore.pacsor.yaml
+            
+    # uncomment for debug
+    #- override/compose.debug.pacsor.yaml
+    

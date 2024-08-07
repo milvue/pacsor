@@ -1,0 +1,33 @@
+version: "3.4"
+storescp:
+    environment:  
+      ADDITIONAL_CORES: "core1"
+
+core1:
+  image: "milvue/pacsor-core:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+  build:
+    context: core
+  environment:
+    GOMAXPROCS: 0
+    SIGNED_URL: ${SIGNED_URL}
+    API_URL: ${INTEGRATOR_URL_2}
+    TOKEN: ${TOKEN_2}
+    CALLBACK_URLS: ${CALLBACK_URLS}
+  depends_on:
+    postgres:
+      condition: service_healthy
+    core:
+      condition: service_healthy
+  restart: on-failure
+  volumes:
+    - type: volume
+      source: inputs
+      target: /inputs
+    - type: volume
+      source: outputs
+      target: /outputs
+  healthcheck:
+    test: [ "CMD", "./healthcheck" ]
+    interval: 5s
+    timeout: 5s
+    retries: 10

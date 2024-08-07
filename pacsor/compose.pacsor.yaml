@@ -1,0 +1,104 @@
+version: "3.4"
+
+x-postgres-config: &postgres-config
+  POSTGRES_HOST: core-db
+  POSTGRES_DB: gorm
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_PORT: 5432
+
+services:
+  core-db:
+    image: "postgres:14-alpine"
+    environment:
+      *postgres-config
+    volumes:
+      - type: volume
+        source: pgdata
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - milvuenet
+
+  storescp:
+    image: "milvue/pacsor-storescp:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    ports:
+      - "${PORT:-1040}:1040"
+    restart: always
+    environment:
+      CONFIG_FILENAME: filter.cfg
+      CONFIG_PROFILE: ${CONFIG_PROFILE:-Default}
+      LOG_LEVEL: ${PACSOR_LOG_LEVEL:-warn}
+    volumes:
+      - inputs:/inputs
+      - type: bind
+        source: "../conf/filter.cfg"
+        target: /filter.cfg
+    healthcheck:
+      test: [ "CMD-SHELL", "echoscu -v storescp 1040" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - milvuenet  
+
+  core:
+    image: "milvue/pacsor-core:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    environment:
+      GOMAXPROCS: 0
+      PROFILER: true
+      SIGNED_URL: ${SIGNED_URL:-true}
+      API_URL: ${API_URL:?need valid URL}
+      TOKEN: ${TOKEN:?can't be empty}
+      CALLBACK_URLS: ${CALLBACK_URLS:-http://storescu:8000}
+      <<: *postgres-config
+    depends_on:
+      core-db:
+        condition: service_healthy
+    restart: always
+    volumes:
+        - inputs:/inputs
+        - outputs:/outputs
+    healthcheck:
+      test: [ "CMD", "./healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - milvuenet
+
+  storescu:
+    image: "milvue/pacsor-storescu:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    restart: always
+    environment:
+      PACS_IP: ${PACS_IP:?need valid PACS IP}
+      PACS_PORT: ${PACS_PORT:?need valid PACS PORT}
+      PACS_AET: ${PACS_AET:?need valid PACS AET}
+      MILVUE_AET: ${MILVUE_AET:-MILVUE}
+    volumes:
+      - outputs:/outputs
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -X GET storescu:8000/healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - milvuenet
+  
+volumes:
+  inputs:
+    name: pacsor-dcm-inputs
+  outputs:
+    name: pacsor-dcm-outputs
+  pgdata:
+    name: pacsor-db-data
+
+networks:
+  milvuenet:
+    name: milvue-net    
+    driver: bridge
