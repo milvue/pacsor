@@ -7,7 +7,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 1. Clone the repository and navigate to the `milvue / pacsor` directory.
 
    ``` bash
-   $ git clone git@github.com:milvue/pacsor.git
+   $ git clone https://github.com/milvue/pacsor.git
    ```
 
 3. Run the `setup.sh` script to create new environment and compose files. This script will prompt you for the necessary settings and create a new `.env.xxx` file in the `env-files` directory, then it will create a symbolic link to this newly created `.env.xxx` file in the root directory.
