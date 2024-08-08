@@ -3,7 +3,7 @@ source ./scripts/menus.deploy.sh
 source ./scripts/dialogs.deploy.sh
 source ./scripts/validators.deploy.sh
 
-SCRIPT_VERSION="1.0"
+SCRIPT_VERSION="1.1"
 MAIN_TITLE="Pacsor Deployment Configuration Tool v$SCRIPT_VERSION"
 
 # Default values
@@ -13,7 +13,7 @@ USE_SIGNED_URL="true"
 SENDER_CALLBACKS_URL="http://storescu:8000"
 SCP_PORT="1040"
 MILVUE_AET="MILVUE"
-SCP_CONFIG_PROFILE="Default"
+SCP_CONFIG_PROFILE="WithSC"
 DEBUG="No"
 SYMLINK="Yes"
 

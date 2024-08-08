@@ -32,7 +32,7 @@ services:
     restart: always
     environment:
       CONFIG_FILENAME: filter.cfg
-      CONFIG_PROFILE: ${CONFIG_PROFILE:-Default}
+      CONFIG_PROFILE: ${CONFIG_PROFILE:-WithSC}
       LOG_LEVEL: ${PACSOR_LOG_LEVEL:-warn}
     volumes:
       - inputs:/inputs
@@ -92,13 +92,8 @@ services:
   
 volumes:
   inputs:
-    name: pacsor-dcm-inputs
   outputs:
-    name: pacsor-dcm-outputs
   pgdata:
-    name: pacsor-db-data
 
 networks:
   milvuenet:
-    name: milvue-net    
-    driver: bridge
