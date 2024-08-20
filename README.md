@@ -31,6 +31,26 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 
 ## Additional Information
 
+### Multi-core setting
+The multi-core setting allows PACSOR to send DICOM images to multiple environments (e.g., production and precert) simultaneously. Then it retrieves the results and sends them to the appropriate PACS system, using the callback URL specified in the `.env` file.
+
+To enable:
+
+1. **Edit `compose.yaml`**:  
+   - Uncomment the line that includes `pacsor/compose.multicore.yaml`.
+
+2. **Edit `.env` file**:  
+   - Fill in `API_URL_1` and `TOKEN_1` for `core1`.
+
+3. **Configure `CALLBACK_URLS`** (optional):  
+   - In the `.env` file, adjust or complete `CALLBACK_URLS` if needed to specify where results should be sent.
+
+4. **Verify Configuration**:  
+   - Run `docker compose config` to ensure everything is correctly set up.
+
+5. **Start PACSOR**:  
+   - Execute `docker compose up -d` to launch the application.
+
 ### Multi-destination Callbacks
 
 The field `CALLBACK_URLS` in the `core` section allows PACSOR to send results to several PACS systems. For instance, if you have two services `storescu-1` and `storescu-2` with different PACS configurations, you can configure `core` to send results to these two PACS by setting `CALLBACK_URLS=http://storescu-1:8000,http://storescu-2:8000`.
