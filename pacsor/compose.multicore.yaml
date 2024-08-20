@@ -1,4 +1,12 @@
 version: "3.4"
+
+x-postgres-config: &postgres-config
+  POSTGRES_HOST: core-db
+  POSTGRES_DB: gorm
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_PORT: 5432
+  
 storescp:
     environment:  
       ADDITIONAL_CORES: "core1"

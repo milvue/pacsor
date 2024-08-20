@@ -7,7 +7,7 @@ include:
     #- pacsor/compose.multi-scu.pacsor.yaml
 
     # Multi-core
-    #- pacsor/compose.multicore.pacsor.yaml
+    #- pacsor/compose.multicore.yaml
             
     # uncomment for debug
     #- override/compose.debug.pacsor.yaml
