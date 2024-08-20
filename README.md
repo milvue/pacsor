@@ -32,7 +32,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 ## Additional Information
 
 ### Multi-core setting
-The multi-core setting allows PACSOR to send DICOM images to multiple environments (e.g., production and precert) simultaneously. Then it retrieves the results and sends them to the appropriate PACS system, using the callback URL specified in the `.env` file.
+The multi-core allows PACSOR to send DICOM images to multiple environments (e.g., production and precert) simultaneously. Then it retrieves the results and sends them to the appropriate PACS system, using the callback URL specified in the `.env` file.
 
 To enable:
 
@@ -48,8 +48,16 @@ To enable:
 4. **Verify Configuration**:  
    - Run `docker compose config` to ensure everything is correctly set up.
 
+   ``` bash
+   $ docker compose config
+   ```
+
 5. **Start PACSOR**:  
-   - Execute `docker compose up -d` to launch the application.
+   - Finally, launch `pacsor` by running `docker compose`:
+   
+   ``` bash
+   $ docker compose up -d
+   ```
 
 ### Multi-destination Callbacks
 
