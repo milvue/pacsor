@@ -45,15 +45,13 @@ To enable:
 3. **Configure `CALLBACK_URLS`** (optional):  
    - In the `.env` file, adjust or complete `CALLBACK_URLS` if needed to specify where results should be sent.
 
-4. **Verify Configuration**:  
-   - Run `docker compose config` to ensure everything is correctly set up.
+4. **Verify Configuration**: Run `docker compose config` to ensure everything is correctly set up.
 
    ``` bash
    $ docker compose config
    ```
 
-5. **Start PACSOR**:  
-   - Finally, launch `pacsor` by running `docker compose`:
+5. **Start PACSOR**: Finally, launch `pacsor` by running `docker compose`:
    
    ``` bash
    $ docker compose up -d
