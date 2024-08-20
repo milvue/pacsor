@@ -7,7 +7,7 @@ SCRIPT_VERSION="1.1"
 MAIN_TITLE="Pacsor Deployment Configuration Tool v$SCRIPT_VERSION"
 
 # Default values
-VERSION_NAME="rc-beryllium-1"
+VERSION_NAME="latest"
 INTEGRATOR_URL="https://predict.milvue.com"
 USE_SIGNED_URL="true"
 SENDER_CALLBACKS_URL="http://storescu:8000"
