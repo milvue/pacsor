@@ -4,30 +4,28 @@ storescp:
       ADDITIONAL_CORES: "core1"
 
 core1:
-  image: "milvue/pacsor-core:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
-  build:
-    context: core
-  environment:
-    GOMAXPROCS: 0
-    SIGNED_URL: ${SIGNED_URL}
-    API_URL: ${INTEGRATOR_URL_2}
-    TOKEN: ${TOKEN_2}
-    CALLBACK_URLS: ${CALLBACK_URLS}
-  depends_on:
-    postgres:
-      condition: service_healthy
-    core:
-      condition: service_healthy
-  restart: on-failure
-  volumes:
-    - type: volume
-      source: inputs
-      target: /inputs
-    - type: volume
-      source: outputs
-      target: /outputs
-  healthcheck:
-    test: [ "CMD", "./healthcheck" ]
-    interval: 5s
-    timeout: 5s
-    retries: 10
+    image: "milvue/pacsor-core:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    environment:
+      GOMAXPROCS: 0
+      PROFILER: true
+      SIGNED_URL: ${SIGNED_URL:-true}
+      API_URL: ${API_URL_1:?need valid URL}
+      TOKEN: ${TOKEN_1:?can't be empty}
+      CALLBACK_URLS: ${CALLBACK_URLS:-http://storescu:8000}
+      <<: *postgres-config
+    depends_on:
+      core-db:
+        condition: service_healthy
+      core:
+        condition: service_healthy
+    restart: always
+    volumes:
+        - inputs:/inputs
+        - outputs:/outputs
+    healthcheck:
+      test: [ "CMD", "./healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - milvuenet
