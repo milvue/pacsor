@@ -28,6 +28,26 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
    ``` bash
    $ docker compose up -d
    ```
+## How to Update
+
+To update the PACSOR components to the latest version, follow these steps:
+
+1. Navigate to the `milvue / pacsor` directory.
+
+2. Pull the latest Docker images by running the following command:
+
+   ```bash
+   $ docker compose pull
+
+   This command ensures that you are using the most up-to-date versions of all the Docker images defined in your compose.yaml file.
+3. Once the images are updated, restart PACSOR by running:
+   
+      ```bash
+      $ docker compose up -d
+      ```
+   This command will recreate the containers using the newly pulled images, ensuring that your PACSOR environment is running the latest updates.
+      
+
 
 ## Additional Information
 
