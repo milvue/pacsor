@@ -2,3 +2,4 @@ env-files/.env.*
 scripts/*.config
 .env
 compose.yaml
+*.sh

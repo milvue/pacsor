@@ -38,6 +38,7 @@ To update the PACSOR components to the latest version, follow these steps:
 
    ```bash
    $ docker compose pull
+   ```
 
    This command ensures that you are using the most up-to-date versions of all the Docker images defined in your compose.yaml file.
 3. Once the images are updated, restart PACSOR by running:
