@@ -3,6 +3,9 @@ include:
   - path:
     - pacsor/compose.pacsor.yaml
 
+    # Legacy HL7 service
+    - pacsor/compose.hl7.yaml
+
     # Multi-scu
     #- pacsor/compose.multi-scu.pacsor.yaml
 

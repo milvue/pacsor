@@ -1,0 +1,21 @@
+version: "3.4"
+
+services:
+  hl7:
+    image: "milvue/pacsor-hl7:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    environment:
+      TEMPLATE_NAME: ${TEMPLATE_NAME}
+      TEMPLATES_ACCESS_TOKEN: ${TEMPLATES_ACCESS_TOKEN}
+      RIS_IP: ${RIS_IP:?need valid RIS IP}
+      RIS_PORT: ${RIS_PORT:?need valid RIS PORT}
+    volumes:
+      - type: volume
+        source: outputs
+        target: /outputs
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -X GET hl7:8000/healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - milvuenet
