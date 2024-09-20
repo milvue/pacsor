@@ -76,13 +76,14 @@ function ask_env_url() {
     # Map friendly names to URLs
     declare -A urls=(
         ["prod"]="https://predict.milvue.com"
+        ["prod-k8s"]="https://k8s.predict.milvue.com"
         ["pre-prod"]="https://preprod.predict.milvue.com"
         ["pre-cert"]="https://precert.predict.milvue.com"
         ["beta"]="https://beta.predict.milvue.com"
         ["other"]="other"
     )
     
-    local options=("prod" "pre-prod" "pre-cert" "beta" "other")
+    local options=("prod" "prod-k8s" "pre-prod" "pre-cert" "beta" "other")
     local prompt="Select environement:"
     local default_status
     local choice
@@ -99,7 +100,7 @@ function ask_env_url() {
         done
 
         # Display the radiolist
-        choice=$(whiptail --backtitle "$MAIN_TITLE" --title "Integrator URL" --radiolist "$prompt" --ok-button $ok_button --cancel-button $cancel_button 15 50 5 "${radiolist_options[@]}" 3>&1 1>&2 2>&3)
+        choice=$(whiptail --backtitle "$MAIN_TITLE" --title "Integrator URL" --radiolist "$prompt" --ok-button $ok_button --cancel-button $cancel_button 15 50 6 "${radiolist_options[@]}" 3>&1 1>&2 2>&3)
         
         if [ $? -ne 0 ]; then
             return 1
