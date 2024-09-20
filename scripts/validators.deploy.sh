@@ -74,6 +74,15 @@ function validate_ip()
     return 0
 }
 
+function validate_ris_ip()
+{
+    if [ -z "$RIS_IP" ] || ! [[ "$RIS_IP" =~ ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$ ]]; then
+        whiptail --title "Error" --backtitle "$MAIN_TITLE" --msgbox "Invalid IP. Please review settings" 8 50
+        return 1
+    fi   
+    return 0
+}
+
 function validate_pacs_port()
 {
     if [ -z "$PACS_PORT" ]; then
@@ -83,6 +92,20 @@ function validate_pacs_port()
 
     if [ -z "$PACS_PORT" ] || ! [[ "$PACS_PORT" =~ ^[0-9]+$ ]] || [ "$PACS_PORT" -lt 100 ] || [ "$PACS_PORT" -gt 65535 ]; then
         whiptail --title "Error" --backtitle "$MAIN_TITLE" --msgbox "Invalid PACS port. Please review settings" 8 50
+        return 1
+    fi
+    return 0
+}
+
+function validate_ris_port()
+{
+    if [ -z "$RIS_PORT" ]; then
+        whiptail --title "Error" --backtitle "$MAIN_TITLE" --msgbox "RIS port can't be empty. Please review settings" 8 50
+        return 1
+    fi
+
+    if [ -z "$RIS_PORT" ] || ! [[ "$RIS_PORT" =~ ^[0-9]+$ ]] || [ "$RIS_PORT" -lt 100 ] || [ "$RIS_PORT" -gt 65535 ]; then
+        whiptail --title "Error" --backtitle "$MAIN_TITLE" --msgbox "Invalid RIS port. Please review settings" 8 50
         return 1
     fi
     return 0

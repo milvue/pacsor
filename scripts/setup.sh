@@ -10,7 +10,7 @@ MAIN_TITLE="Pacsor Deployment Configuration Tool v$SCRIPT_VERSION"
 VERSION_NAME="latest"
 INTEGRATOR_URL="https://predict.milvue.com"
 USE_SIGNED_URL="true"
-SENDER_CALLBACKS_URL="http://storescu:8000"
+SENDER_CALLBACKS_URL="http://storescu:8000,http://hl7:8000"
 SCP_PORT="1040"
 MILVUE_AET="MILVUE"
 SCP_CONFIG_PROFILE="WithSC"
@@ -23,6 +23,8 @@ CLIENT_TOKEN=""
 PACS_AET=""
 PACS_IP=""
 PACS_PORT=""
+RIS_IP=""
+RIS_PORT=""
 
 CONFIG_DIR="./scripts"
 
@@ -44,6 +46,8 @@ function save_config(){
     echo "PACS_AET=$PACS_AET" >> $config_file
     echo "PACS_IP=$PACS_IP" >> $config_file
     echo "PACS_PORT=$PACS_PORT" >> $config_file
+    echo "RIS_IP=$RIS_IP" >> $config_file
+    echo "RIS_PORT=$RIS_PORT" >> $config_file
     echo "SCP_PORT=$SCP_PORT" >> $config_file
     echo "MILVUE_AET=$MILVUE_AET" >> $config_file
     echo "SCP_CONFIG_PROFILE=$SCP_CONFIG_PROFILE" >> $config_file
@@ -107,7 +111,7 @@ function create_deploy(){
     CLIENT_CLEAN_NAME=$(echo $CLIENT_NAME | sed 's/\./-/g')
 
     #Export the variables
-    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE
+    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT RIS_IP RIS_PORT SCP_CONFIG_PROFILE
 
     # Create env-files directory if it does not exist
     mkdir -p env-files

@@ -44,11 +44,13 @@ function main_menu(){
         "4" "Set PACS AE Title             [$PACS_AET]" \
         "5" "Set PACS IP                   [$PACS_IP]" \
         "6" "Set PACS Port                 [$PACS_PORT]" \
+        "7" "Set RIS IP                    [$RIS_IP]" \
+        "8" "Set RIS Port                  [$RIS_PORT]" \
         "" "" \
-        "7" "Set Milvue SCP Port           [$SCP_PORT]" \
-        "8" "Set Milvue SCP AET            [$MILVUE_AET]" \
+        "9" "Set Milvue SCP Port           [$SCP_PORT]" \
+        "10" "Set Milvue SCP AET            [$MILVUE_AET]" \
         "" "" \
-        "9" "Advanced settings" \
+        "11" "Advanced settings" \
         "" "" \
         "o" "Load configuration" \
         "d" "Display current configuration" \
@@ -70,9 +72,11 @@ function main_menu(){
             4) ask_pacs_aet;;
             5) ask_pacs_ip;;
             6) ask_pacs_port;;
-            7) ask_scp_port;;
-            8) ask_milvue_aet;;
-            9) sub_menu_advanced_settings;;
+            7) ask_ris_ip;;
+            8) ask_ris_port;;
+            9) ask_scp_port;;
+            10) ask_milvue_aet;;
+            11) sub_menu_advanced_settings;;
             o) load_config;;
             d) display_config;;
             w) save_and_exit;;
@@ -83,7 +87,7 @@ function main_menu(){
 
 function startwizard(){
     local step=1
-    local max_steps=6
+    local max_steps=8
     
     while [ $step -le $max_steps ]; do
         case $step in
@@ -127,6 +131,20 @@ function startwizard(){
 
             6)
                 if ! ask_pacs_port "wizard"; then
+                    ((step--))
+                else
+                    ((step++))
+                fi
+                ;;
+            7)
+                if ! ask_ris_ip "wizard"; then
+                    ((step--))
+                else
+                    ((step++))
+                fi
+                ;;
+            8)
+                if ! ask_ris_port "wizard"; then
                     ((step--))
                 else
                     ((step++))

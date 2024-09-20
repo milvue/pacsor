@@ -18,6 +18,9 @@ function display_config(){
     msg+="    pacs_aet: $PACS_AET\n"
     msg+="    pacs_ip: $PACS_IP\n"
     msg+="    pacs_port: $PACS_PORT\n"
+    msg+="  RIS settings:\n"
+    msg+="    ris_ip: $RIS_IP\n"
+    msg+="    ris_port: $RIS_PORT\n"
     msg+="  Milvue SCP settings:\n"
     msg+="    scp_port: $SCP_PORT\n"
     msg+="    milvue_aet: $MILVUE_AET\n"
@@ -248,6 +251,62 @@ function ask_pacs_ip(){
             return 1
         fi
         if ! validate_ip; then
+            continue
+        else
+            return 0
+        fi
+    done
+}
+
+#we continue asking for the RIS IP
+function ask_ris_ip(){
+    if [ "$1" = "wizard" ]; then
+        wizard="true"
+        ok_button="Next"
+        cancel_button="Back"
+    else
+        ok_button="Ok"
+        cancel_button="Cancel"
+        wizard="false"
+    fi
+
+    initial=$RIS_IP
+    while true; do
+        RIS_IP=$(whiptail --backtitle "$MAIN_TITLE" --title "RIS IP" --inputbox "Enter the RIS IP" --ok-button $ok_button --cancel-button $cancel_button 8 78 "$RIS_IP" 3>&1 1>&2 2>&3)
+        
+        if [ $? -ne 0 ]; then
+            RIS_IP=$initial
+            return 1
+        fi
+        if ! validate_ris_ip; then
+            continue
+        else
+            return 0
+        fi
+    done
+}
+
+#we continue asking for the RIS port
+function ask_ris_port(){
+    if [ "$1" = "wizard" ]; then
+        wizard="true"
+        ok_button="Next"
+        cancel_button="Back"
+    else
+        ok_button="Ok"
+        cancel_button="Cancel"
+        wizard="false"
+    fi
+
+    initial=$RIS_PORT
+    while true; do
+        RIS_PORT=$(whiptail --backtitle "$MAIN_TITLE" --title "RIS Port" --inputbox "Enter the RIS port" --ok-button $ok_button --cancel-button $cancel_button 8 78 "$RIS_PORT" 3>&1 1>&2 2>&3)
+        
+        if [ $? -ne 0 ]; then
+            RIS_PORT=$initial
+            return 1
+        fi
+        if ! validate_ris_port; then
             continue
         else
             return 0
