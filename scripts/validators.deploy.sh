@@ -47,13 +47,14 @@ function validate_client_name()
         return 1
     fi
 
-    if ! [[ "$CLIENT_NAME" =~ ^[a-zA-Z]{2,4}\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+$ ]]; then
+    if ! [[ "$CLIENT_NAME" =~ ^[a-zA-Z]{2,8}\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+$ ]]; then
         whiptail --title "Error" --backtitle "$MAIN_TITLE" --msgbox "Invalid client name format. Please review settings" 8 50
         return 1
     fi
 
     return 0
 }
+
 
 function validate_client_token()
 {
