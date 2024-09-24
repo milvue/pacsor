@@ -77,10 +77,11 @@ function ask_env_url() {
         ["pre-prod"]="https://preprod.predict.milvue.com"
         ["pre-cert"]="https://precert.predict.milvue.com"
         ["beta"]="https://beta.predict.milvue.com"
+        ["localor"]="http://integrator:8080"
         ["other"]="other"
     )
     
-    local options=("prod" "prod-k8s" "pre-prod" "pre-cert" "beta" "other")
+    local options=("prod" "prod-k8s" "pre-prod" "pre-cert" "beta" "localor" "other")
     local prompt="Select environement:"
     local default_status
     local choice
@@ -97,7 +98,7 @@ function ask_env_url() {
         done
 
         # Display the radiolist
-        choice=$(whiptail --backtitle "$MAIN_TITLE" --title "Integrator URL" --radiolist "$prompt" --ok-button $ok_button --cancel-button $cancel_button 15 50 6 "${radiolist_options[@]}" 3>&1 1>&2 2>&3)
+        choice=$(whiptail --backtitle "$MAIN_TITLE" --title "Integrator URL" --radiolist "$prompt" --ok-button $ok_button --cancel-button $cancel_button 15 50 7 "${radiolist_options[@]}" 3>&1 1>&2 2>&3)
         
         if [ $? -ne 0 ]; then
             return 1
@@ -109,6 +110,12 @@ function ask_env_url() {
             else
                 return 0
             fi
+        elif [ "$choice" = "localor" ]; then
+            INTEGRATOR_URL="http://integrator:8080"
+            USE_SIGNED_URL=false
+            CLIENT_TOKEN="00000032-d366-45e2-844a-50576bab3f72"
+            CLIENT_NAME="local.milvue.localor.$(hostname | tr '[:upper:]' '[:lower:]').0"
+            return 0
         else
             INTEGRATOR_URL="${urls[$choice]}"
             return 0
