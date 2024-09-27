@@ -7,13 +7,13 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 1. Clone the repository and navigate to the `milvue / pacsor` directory.
 
    ``` bash
-   $ git clone https://github.com/milvue/pacsor.git
+   git clone https://github.com/milvue/pacsor.git
    ```
 
 3. Run the `setup.sh` script to create new environment and compose files. This script will prompt you for the necessary settings and create a new `.env.xxx` file in the `env-files` directory, then it will create a symbolic link to this newly created `.env.xxx` file in the root directory.
 
    ``` bash
-   $ bash ./scripts/setup.sh
+   bash ./scripts/setup.sh
    ```
 
    The script is a dialog-based script that will prompt you for the several settings.
@@ -26,7 +26,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 5. Finally, launch `pacsor` by running `docker compose`:
    
    ``` bash
-   $ docker compose up -d
+   docker compose up -d
    ```
 ## How to Update
 
@@ -37,14 +37,14 @@ To update the PACSOR components to the latest version, follow these steps:
 2. Pull the latest Docker images by running the following command:
 
    ```bash
-   $ docker compose pull
+   docker compose pull
    ```
 
    This command ensures that you are using the most up-to-date versions of all the Docker images defined in your compose.yaml file.
 3. Once the images are updated, restart PACSOR by running:
    
       ```bash
-      $ docker compose up -d
+      docker compose up -d
       ```
    This command will recreate the containers using the newly pulled images, ensuring that your PACSOR environment is running the latest updates.
       
@@ -69,13 +69,13 @@ To enable:
 4. **Verify Configuration**: Run `docker compose config` to ensure everything is correctly set up.
 
    ``` bash
-   $ docker compose config
+   docker compose config
    ```
 
 5. **Start PACSOR**: Finally, launch `pacsor` by running `docker compose`:
    
    ``` bash
-   $ docker compose up -d
+   docker compose up -d
    ```
 
 ### Multi-destination Callbacks
