@@ -2,3 +2,4 @@ networks:
   pacsor:
     name: milvue-net
     driver: bridge
+    external: true
