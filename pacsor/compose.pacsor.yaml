@@ -23,7 +23,7 @@ services:
       retries: 5
     restart: always
     networks:
-      - milvuenet
+      - pacsor
 
   storescp:
     image: "milvue/pacsor-storescp:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
@@ -45,7 +45,7 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - milvuenet  
+      - pacsor  
 
   core:
     image: "milvue/pacsor-core:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
@@ -70,7 +70,7 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - milvuenet
+      - pacsor
 
   storescu:
     image: "milvue/pacsor-storescu:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
@@ -88,7 +88,7 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - milvuenet
+      - pacsor
   
 volumes:
   inputs:
@@ -96,4 +96,4 @@ volumes:
   pgdata:
 
 networks:
-  milvuenet:
+  pacsor:

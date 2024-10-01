@@ -37,4 +37,4 @@ services:
         timeout: 5s
         retries: 10
       networks:
-        - milvuenet
+        - pacsor

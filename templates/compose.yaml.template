@@ -3,6 +3,9 @@ include:
   - path:
     - pacsor/compose.pacsor.yaml
 
+    # Network for localor
+    #- override/compose.localor.pacsor.yaml
+
     # Multi-scu
     #- pacsor/compose.multi-scu.pacsor.yaml
 

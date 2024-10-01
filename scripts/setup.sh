@@ -16,6 +16,7 @@ MILVUE_AET="MILVUE"
 SCP_CONFIG_PROFILE="WithSC"
 DEBUG="No"
 SYMLINK="Yes"
+ISLOCALOR=false
 
 # values to be set
 CLIENT_NAME=""
@@ -47,6 +48,7 @@ function save_config(){
     echo "SCP_PORT=$SCP_PORT" >> $config_file
     echo "MILVUE_AET=$MILVUE_AET" >> $config_file
     echo "SCP_CONFIG_PROFILE=$SCP_CONFIG_PROFILE" >> $config_file
+    echo "ISLOCALOR=$ISLOCALOR" >> $config_file
 }
 
 #now we search for all config files wich end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user anwser no then we exit 1. If user select a file, we load the content to set env vars.
@@ -123,9 +125,14 @@ function create_deploy(){
     # Generate the compose.yaml file
     cp templates/compose.yaml.template compose.yaml
 
+    # Activate localor mode if needed
+    if [ "$ISLOCALOR" = "true" ]; then
+        sed -i 's/#- override\/compose.localor.pacsor.yaml/- override\/compose.localor.pacsor.yaml/' compose.yaml
+    fi
+
     # Activate the debug mode if needed
     if [ "$DEBUG" = "Yes" ]; then
-        sed -i 's/#- override\/compose.debug.pacsor.yaml/- pacsor\/compose.debug.pacosr.yaml/' compose.yaml
+        sed -i 's/#- override\/compose.debug.pacsor.yaml/- override\/compose.debug.pacsor.yaml/' compose.yaml
     fi
 
     echo "Compose file created."

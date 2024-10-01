@@ -116,6 +116,7 @@ function ask_env_url() {
             USE_SIGNED_URL=false
             CLIENT_TOKEN="00000032-d366-45e2-844a-50576bab3f72"
             CLIENT_NAME="local.milvue.localor.$(hostname | tr '[:upper:]' '[:lower:]').0"
+            ISLOCALOR=true
             return 0
         else
             INTEGRATOR_URL="${urls[$choice]}"
