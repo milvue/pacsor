@@ -3,7 +3,7 @@ source ./scripts/menus.deploy.sh
 source ./scripts/dialogs.deploy.sh
 source ./scripts/validators.deploy.sh
 
-SCRIPT_VERSION="1.5"
+SCRIPT_VERSION="1.6"
 MAIN_TITLE="Pacsor Deployment Configuration Tool v$SCRIPT_VERSION"
 
 # Default values
