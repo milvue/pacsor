@@ -1,5 +1,3 @@
-version: "3.4"
-
 x-postgres-config: &postgres-config
   POSTGRES_HOST: core-db
   POSTGRES_DB: gorm
