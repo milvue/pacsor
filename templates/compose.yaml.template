@@ -1,4 +1,3 @@
-version: "3.4"
 include:
   - path:
     - pacsor/compose.pacsor.yaml
