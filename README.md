@@ -2,6 +2,12 @@
 
 PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for efficient handling and processing of medical images. Its primary functions include receiving DICOM images, sending them to Milvue applications, retrieving results, and then dispatching these results to one or multiple DICOM receivers.
 
+## Prerequisites
+**Tested versions:**
+- Ubuntu : version 22.04.1 LTS
+- Docker Engine : version 24.0.6
+- Docker Compose : version 2.29.6 [ (How to install a specific docker-compose version)](#1-how-to-install-a-specific-docker-compose-version)
+
 ## Usage
 
 1. Clone the repository and navigate to the `milvue / pacsor` directory.
@@ -107,3 +113,39 @@ To operate PACSOR, the following Docker Compose commands are used:
 - **Viewing Logs**:
 	- `docker logs -f [container_name_or_id]`
 	- To monitor real-time logs from a specific container, use this command. Replace `[container_name_or_id]` with the actual name or ID of the container you want to monitor.
+
+## Advanced Usage
+
+### 1. How to install a specific docker-compose version
+   #### 1.1 Download the specific version of docker-compose
+
+   ```bash
+   DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+   mkdir -p $DOCKER_CONFIG/cli-plugins
+   curl -SL https://github.com/docker/compose/releases/download/v2.29.6/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+   ```
+
+   
+   #### 1.2 Apply the executable permission to the binary
+
+   For only your user :
+      
+   ```bash
+      chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+   ```
+
+   For all users :
+      
+   ```bash
+   sudo cp $DOCKER_CONFIG/cli-plugins/docker-compose /usr/local/lib/docker/cli-plugins/
+   sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+   ```
+
+   #### 1.3 Check the version of docker-compose
+   
+   ```bash
+   docker compose version
+   ```
+   Expected output:
+   ```bash
+   Docker Compose version v2.29.6
