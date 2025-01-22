@@ -1,0 +1,41 @@
+services:
+  hl7:
+    image: "milvue/pacsor-hl7:v2.5.beta1"
+    restart: always
+
+    environment:
+      ENABLE_HL7: true
+      SEN_APP: ${SENDING_APPLICATION:-PACSOR2}
+      SEN_FAC: ${SENDING_FACILITY:-MILVUE}
+      REC_APP: ${RECEIVING_APPLICATION:?need valid RECEIVING_APPLICATION}
+      REC_FAC: ${RECEIVING_FACILITY:?need valid RECEIVING_FACILITY}
+      HL7_LANG: ${HL7_LANGUAGE:-FR}
+      RIS_HOST: ${RIS_HOST_IP:?need valid RIS_HOST IP address}
+      RIS_PORT: ${RIS_HOST_PORT:?need valid RIS_PORT}
+      INCLUDEREPORT: ${INCLUDE_TECHCARE_REPORT:-false}
+      REPORT_URL: ${TECHCARE_REPORT_URL:-https://k8s.report.milvue.com}
+      TOKEN: ${TOKEN:?can't be empty}
+      REPORTFORMAT: ${TECHCARE_REPORT_FORMAT:-PLAIN}
+      DEFPIDISSUER: MILVUE
+      LOG_LEVEL: HL7
+      POPULATEPID: ${POPULATE_PID:-true}
+      POPULATEPV1: ${POPULATE_PV1:-false}
+      POPULATEORC: ${POPULATE_ORC:-true}
+      POPULATEZDS: ${POPULATE_ZDS:-true}
+      SIUIDINOBX1: ${SIUID_IN_OBX1:-true}
+      OBXUPPERCASE: ${OBX_UPPERCASE:-true}
+    
+    volumes:
+      - outputs:/outputs
+
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -X GET hl7:8000/healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      - pacsor
+
+volumes:
+  outputs:
