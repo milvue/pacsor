@@ -13,7 +13,7 @@ services:
       RIS_HOST: ${RIS_HOST_IP:?need valid RIS_HOST IP address}
       RIS_PORT: ${RIS_HOST_PORT:?need valid RIS_PORT}
       INCLUDEREPORT: ${INCLUDE_TECHCARE_REPORT:-false}
-      REPORT_URL: ${TECHCARE_REPORT_URL:-https://k8s.report.milvue.com}
+      REPORT_URL: ${TECHCARE_REPORT_URL:-https://k8s.report.milvue.com/report}
       TOKEN: ${TOKEN:?can't be empty}
       REPORTFORMAT: ${TECHCARE_REPORT_FORMAT:-PLAIN}
       DEFPIDISSUER: MILVUE
