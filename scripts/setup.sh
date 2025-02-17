@@ -8,7 +8,7 @@ MAIN_TITLE="Pacsor Deployment Configuration Tool v$SCRIPT_VERSION"
 
 # Default values
 VERSION_NAME="latest"
-INTEGRATOR_URL="https://predict.milvue.com"
+INTEGRATOR_URL="https://k8s.predict.milvue.com"
 USE_SIGNED_URL="true"
 SENDER_CALLBACKS_URL="http://storescu:8000"
 SCP_PORT="1040"
