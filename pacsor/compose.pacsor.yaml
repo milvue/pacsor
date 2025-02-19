@@ -29,7 +29,6 @@ services:
       - "${PORT:-1040}:1040"
     restart: always
     environment:
-      CONFIG_FILENAME: filter.cfg
       CONFIG_PROFILE: ${CONFIG_PROFILE:-WithSC}
       LOG_LEVEL: ${PACSOR_LOG_LEVEL:-warn}
     volumes:
