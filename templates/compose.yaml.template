@@ -8,6 +8,9 @@ include:
     # Multi-scu
     #- pacsor/compose.multi-scu.pacsor.yaml
 
+    # Multi-scp
+    #- pacsor/compose.multiscp.yaml
+
     # Multi-core
     #- pacsor/compose.multicore.yaml
             

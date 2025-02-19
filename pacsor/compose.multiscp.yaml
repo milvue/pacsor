@@ -4,31 +4,15 @@ x-postgres-config: &postgres-config
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
   POSTGRES_PORT: 5432
-
+  
 services:
-  core-db:
-    image: "postgres:14-alpine"
-    environment:
-      *postgres-config
-    volumes:
-      - type: volume
-        source: pgdata
-        target: /var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: always
-    networks:
-      - pacsor
-
-  storescp:
+  storescp-beta:
     image: "milvue/pacsor-storescp-wgs:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
     ports:
-      - "${PORT:-1040}:1040"
+      - "${PORT_BETA:-1050}:1040"
     restart: always
     environment:
+      CORE_HOST: "${CORE_NAME:-core-beta}"
       CONFIG_PROFILE: ${CONFIG_PROFILE:-WithSC}
       LOG_LEVEL: ${PACSOR_LOG_LEVEL:-warn}
     volumes:
@@ -42,21 +26,23 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - pacsor  
+      - pacsor
 
-  core:
+  core-beta:
     image: "milvue/pacsor-core:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
     environment:
       GOMAXPROCS: 0
       PROFILER: true
       SIGNED_URL: ${SIGNED_URL:-true}
-      API_URL: ${API_URL:?need valid URL}
-      TOKEN: ${TOKEN:?can't be empty}
+      API_URL: ${API_URL_BETA:?need valid URL}
+      TOKEN: ${TOKEN_BETA:?can't be empty}
       CALLBACK_URLS: ${CALLBACK_URLS:-http://storescu:8000}
       NO_DUPLICATE_UPLOAD: ${NO_DUPLICATE_UPLOAD:-true}
       <<: *postgres-config
     depends_on:
       core-db:
+        condition: service_healthy
+      core:
         condition: service_healthy
     restart: always
     volumes:
@@ -69,29 +55,3 @@ services:
       retries: 10
     networks:
       - pacsor
-
-  storescu:
-    image: "milvue/pacsor-storescu:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
-    restart: always
-    environment:
-      PACS_IP: ${PACS_IP:?need valid PACS IP}
-      PACS_PORT: ${PACS_PORT:?need valid PACS PORT}
-      PACS_AET: ${PACS_AET:?need valid PACS AET}
-      MILVUE_AET: ${MILVUE_AET:-MILVUE}
-    volumes:
-      - outputs:/outputs
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -X GET storescu:8000/healthcheck" ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    networks:
-      - pacsor
-  
-volumes:
-  inputs:
-  outputs:
-  pgdata:
-
-networks:
-  pacsor:
