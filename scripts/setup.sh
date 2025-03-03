@@ -21,7 +21,7 @@ HL7_ENABLE="false"
 HL7_LANGUAGE="FR"
 HL7_INCLUDE_TCR="false"
 HL7_TCR_URL="https://k8s.report.milvue.com/report"
-HL7_TCR_OUT_FORMAT="PLAIN"
+HL7_TCR_OUT_FORMAT="B64"
 
 # values to be set
 CLIENT_NAME=""
