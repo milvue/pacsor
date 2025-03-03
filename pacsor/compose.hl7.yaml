@@ -1,30 +1,33 @@
 services:
   hl7:
-    image: "milvue/pacsor-hl7:v2.5.beta1"
+    image: "milvue/pacsor-hl7:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
     restart: always
 
     environment:
       ENABLE_HL7: true
-      SEN_APP: ${SENDING_APPLICATION:-PACSOR2}
+      SEN_APP: ${SENDING_APPLICATION:-MILVUE_GATEWAY}
       SEN_FAC: ${SENDING_FACILITY:-MILVUE}
       REC_APP: ${RECEIVING_APPLICATION:?need valid RECEIVING_APPLICATION}
       REC_FAC: ${RECEIVING_FACILITY:?need valid RECEIVING_FACILITY}
       HL7_LANG: ${HL7_LANGUAGE:-FR}
       RIS_HOST: ${RIS_HOST_IP:?need valid RIS_HOST IP address}
       RIS_PORT: ${RIS_HOST_PORT:?need valid RIS_PORT}
-      INCLUDEREPORT: ${INCLUDE_TECHCARE_REPORT:-false}
-      REPORT_URL: ${TECHCARE_REPORT_URL:-https://k8s.report.milvue.com/report}
+      RIS_TIMEOUT: ${RIS_TIMEOUT:-15}
+      INCLUDE_REPORT: ${INCLUDE_TECHCARE_REPORT:-false}
+      API_URL: ${API_URL:?need valid URL}
+      REPORT_URL: ${TECHCARE_REPORT_URL:?need valid report URL}
       TOKEN: ${TOKEN:?can't be empty}
-      REPORTFORMAT: ${TECHCARE_REPORT_FORMAT:-PLAIN}
-      DEFPIDISSUER: MILVUE
-      LOG_LEVEL: HL7
-      POPULATEPID: ${POPULATE_PID:-true}
-      POPULATEPV1: ${POPULATE_PV1:-false}
-      POPULATEORC: ${POPULATE_ORC:-true}
-      POPULATEZDS: ${POPULATE_ZDS:-true}
-      SIUIDINOBX1: ${SIUID_IN_OBX1:-true}
-      OBXUPPERCASE: ${OBX_UPPERCASE:-true}
-    
+      REPORT_FORMAT: ${TECHCARE_REPORT_FORMAT:-PLAIN}
+      DEF_PID_ISSUER: ${DEF_PID_ISSUER:-MILVUE}
+      LOG_LEVEL: ${HL7_LOG_LEVEL:-WARN}
+      POPULATE_PID: ${POPULATE_PID:-true}
+      POPULATE_PV1: ${POPULATE_PV1:-false}
+      POPULATE_ORC: ${POPULATE_ORC:-true}
+      POPULATE_ZDS: ${POPULATE_ZDS:-true}
+      SIUID_IN_OBX1: ${SIUID_IN_OBX1:-true}
+      OBX_UPPERCASE: ${OBX_UPPERCASE:-true}
+      HTTP_TIMEOUT: ${HTTP_TIMEOUT:-600}
+        
     volumes:
       - outputs:/outputs
 
