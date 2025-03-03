@@ -76,12 +76,12 @@ function ask_env_url() {
         ["Azure-preprod"]="https://azure-preprod.predict.milvue.com"
         ["Azure-beta"]="https://azure-beta.predict.milvue.com"
         ["GCP-precert"]="https://precert.predict.milvue.com"
-        ["GCP-staging"]="https://staging.predict.milvue.com"
+        #["GCP-staging"]="https://staging.predict.milvue.com"
         ["localor"]="http://integrator:8080"
         ["other"]="other"
     )
     
-    local options=("Azure-prod" "Azure-preprod" "Azure-beta" "GCP-precert" "GCP-staging" "localor" "other")
+    local options=("Azure-prod" "Azure-preprod" "Azure-beta" "GCP-precert" "localor" "other")
     local prompt="Select environement:"
     local default_status
     local choice
