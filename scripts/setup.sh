@@ -135,7 +135,7 @@ function create_deploy(){
     # Generate the .env file
     cp templates/.env.pacsor.template env-files/.env.$CLIENT_NAME
     if [ "$HL7_ENABLE" = "true" ]; then
-        echo "# HL7 Section" >> env-files/.env.$CLIENT_NAME
+        echo "" >> env-files/.env.$CLIENT_NAME
         cat templates/.env.hl7.template >> env-files/.env.$CLIENT_NAME
         SENDER_CALLBACKS_URL=${SENDER_CALLBACKS_URL},http://hl7:8000
     fi
@@ -161,6 +161,9 @@ function create_deploy(){
     # Activate the debug mode if needed
     if [ "$DEBUG" = "Yes" ]; then
         sed -i 's/#- override\/compose.debug.pacsor.yaml/- override\/compose.debug.pacsor.yaml/' compose.yaml
+        if [ "$HL7_ENABLE" = "true" ]; then
+            sed -i 's/#- override\/compose.debug.hl7.yaml/- override\/compose.debug.hl7.yaml/' compose.yaml
+        fi
     fi
 
     echo "Compose file created."
