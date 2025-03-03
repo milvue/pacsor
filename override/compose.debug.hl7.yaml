@@ -1,0 +1,4 @@
+services:
+  hl7:
+    environment:
+      LOG_LEVEL: DEBUG
