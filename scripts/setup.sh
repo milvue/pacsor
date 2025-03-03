@@ -3,8 +3,8 @@ source ./scripts/menus.deploy.sh
 source ./scripts/dialogs.deploy.sh
 source ./scripts/validators.deploy.sh
 
-SCRIPT_VERSION="1.6"
-MAIN_TITLE="Pacsor Deployment Configuration Tool v$SCRIPT_VERSION"
+SCRIPT_VERSION="2.0"
+MAIN_TITLE="Milvue Gateway Deployment Configuration Tool v$SCRIPT_VERSION"
 
 # Default values
 VERSION_NAME="latest"
@@ -17,6 +17,11 @@ SCP_CONFIG_PROFILE="WithSC"
 DEBUG="No"
 SYMLINK="Yes"
 ISLOCALOR=false
+HL7_ENABLE="false"
+HL7_LANGUAGE="FR"
+HL7_INCLUDE_TCR="false"
+HL7_TCR_URL="https://k8s.report.milvue.com/report"
+HL7_TCR_OUT_FORMAT="PLAIN"
 
 # values to be set
 CLIENT_NAME=""
@@ -24,6 +29,10 @@ CLIENT_TOKEN=""
 PACS_AET=""
 PACS_IP=""
 PACS_PORT=""
+HL7_RECEIVING_APPLICATION=""
+HL7_RECEIVING_FACILITY=""
+HL7_RIS_IP=""
+HL7_RIS_PORT=""
 
 CONFIG_DIR="./scripts"
 
@@ -49,6 +58,15 @@ function save_config(){
     echo "MILVUE_AET=$MILVUE_AET" >> $config_file
     echo "SCP_CONFIG_PROFILE=$SCP_CONFIG_PROFILE" >> $config_file
     echo "ISLOCALOR=$ISLOCALOR" >> $config_file
+    echo "HL7_ENABLE=$HL7_ENABLE" >> $config_file
+    echo "HL7_LANGUAGE=$HL7_LANGUAGE" >> $config_file
+    echo "HL7_INCLUDE_TCR=$HL7_INCLUDE_TCR" >> $config_file
+    echo "HL7_TCR_URL=$HL7_TCR_URL" >> $config_file
+    echo "HL7_TCR_OUT_FORMAT=$HL7_TCR_OUT_FORMAT" >> $config_file
+    echo "HL7_RECEIVING_APPLICATION=$HL7_RECEIVING_APPLICATION" >> $config_file
+    echo "HL7_RECEIVING_FACILITY=$HL7_RECEIVING_FACILITY" >> $config_file
+    echo "HL7_RIS_IP=$HL7_RIS_IP" >> $config_file
+    echo "HL7_RIS_PORT=$HL7_RIS_PORT" >> $config_file
 }
 
 #now we search for all config files wich end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user anwser no then we exit 1. If user select a file, we load the content to set env vars.
@@ -109,13 +127,18 @@ function create_deploy(){
     CLIENT_CLEAN_NAME=$(echo $CLIENT_NAME | sed 's/\./-/g')
 
     #Export the variables
-    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE
+    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE HL7_LANGUAGE HL7_INCLUDE_TCR HL7_TCR_URL HL7_TCR_OUT_FORMAT HL7_RECEIVING_APPLICATION HL7_RECEIVING_FACILITY HL7_RIS_IP HL7_RIS_PORT
 
     # Create env-files directory if it does not exist
     mkdir -p env-files
 
     # Generate the .env file
     cp templates/.env.pacsor.template env-files/.env.$CLIENT_NAME
+    if [ "$HL7_ENABLE" = "true" ]; then
+        echo "# HL7 Section" >> env-files/.env.$CLIENT_NAME
+        cat templates/.env.hl7.template >> env-files/.env.$CLIENT_NAME
+        SENDER_CALLBACKS_URL=${SENDER_CALLBACKS_URL},http://hl7:8000
+    fi
 
     envsubst < env-files/.env.$CLIENT_NAME > env-files/.env.$CLIENT_NAME.tmp
     mv env-files/.env.$CLIENT_NAME.tmp env-files/.env.$CLIENT_NAME
@@ -128,6 +151,11 @@ function create_deploy(){
     # Activate localor mode if needed
     if [ "$ISLOCALOR" = "true" ]; then
         sed -i 's/#- override\/compose.localor.pacsor.yaml/- override\/compose.localor.pacsor.yaml/' compose.yaml
+    fi
+
+    # Activate the HL7 module if needed
+    if [ "$HL7_ENABLE" = "true" ]; then
+        sed -i 's/#- pacsor\/compose.hl7.yaml/- pacsor\/compose.hl7.yaml/' compose.yaml
     fi
 
     # Activate the debug mode if needed
