@@ -17,9 +17,10 @@ services:
       API_URL: ${API_URL:?need valid URL}
       REPORT_URL: ${TECHCARE_REPORT_URL:?need valid report URL}
       TOKEN: ${TOKEN:?can't be empty}
-      REPORT_FORMAT: ${TECHCARE_REPORT_FORMAT:-PLAIN}
+      REPORT_FORMAT: ${TECHCARE_REPORT_FORMAT:-B64}
       DEF_PID_ISSUER: ${DEF_PID_ISSUER:-MILVUE}
       LOG_LEVEL: ${HL7_LOG_LEVEL:-WARN}
+      GCP_LOGS: ${GCP_LOGS:-true}
       POPULATE_PID: ${POPULATE_PID:-true}
       POPULATE_PV1: ${POPULATE_PV1:-false}
       POPULATE_ORC: ${POPULATE_ORC:-true}
