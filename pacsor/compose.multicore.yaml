@@ -19,6 +19,7 @@ services:
         API_URL: ${API_URL_1:?need valid URL}
         TOKEN: ${TOKEN_1:?can't be empty}
         CALLBACK_URLS: ${CALLBACK_URLS_1:?can't be empty}
+        INFERENCE_COMMANDS: ${INFERENCE_COMMANDS_1:-smarturgences,smartxpert}
         <<: *postgres-config
       depends_on:
         core-db:
