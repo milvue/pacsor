@@ -4,25 +4,21 @@ source ./scripts/dialogs.deploy.sh
 source ./scripts/validators.deploy.sh
 
 SCRIPT_VERSION="2.0"
-MAIN_TITLE="Milvue Suite Gateway Deployment Configuration Tool v$SCRIPT_VERSION"
+MAIN_TITLE="SmartTrauma Gateway Deployment Configuration Tool v$SCRIPT_VERSION"
+GLOBAL_PRODUCT="smarttrauma"
 
 # Default values
 VERSION_NAME="latest"
-INTEGRATOR_URL="https://k8s.predict.milvue.com"
-USE_SIGNED_URL="true"
+INTEGRATOR_URL="http://integrator:8080"
+USE_SIGNED_URL="false"
 SENDER_CALLBACKS_URL="http://storescu:8000"
-INF_COMM="smarturgences,smartxpert"
+INF_COMM="detection"
 SCP_PORT="1040"
 MILVUE_AET="MILVUE"
 SCP_CONFIG_PROFILE="WithSC"
 DEBUG="No"
 SYMLINK="Yes"
-ISLOCALOR=false
-HL7_ENABLE="false"
-HL7_LANGUAGE="FR"
-HL7_INCLUDE_TCR="false"
-HL7_TCR_URL="https://k8s.report.milvue.com/report"
-HL7_TCR_OUT_FORMAT="B64"
+ISLOCALOR=true
 
 # values to be set
 CLIENT_NAME=""
@@ -30,10 +26,6 @@ CLIENT_TOKEN=""
 PACS_AET=""
 PACS_IP=""
 PACS_PORT=""
-HL7_RECEIVING_APPLICATION=""
-HL7_RECEIVING_FACILITY=""
-HL7_RIS_IP=""
-HL7_RIS_PORT=""
 
 CONFIG_DIR="./scripts"
 
@@ -60,15 +52,6 @@ function save_config(){
     echo "MILVUE_AET=$MILVUE_AET" >> $config_file
     echo "SCP_CONFIG_PROFILE=$SCP_CONFIG_PROFILE" >> $config_file
     echo "ISLOCALOR=$ISLOCALOR" >> $config_file
-    echo "HL7_ENABLE=$HL7_ENABLE" >> $config_file
-    echo "HL7_LANGUAGE=$HL7_LANGUAGE" >> $config_file
-    echo "HL7_INCLUDE_TCR=$HL7_INCLUDE_TCR" >> $config_file
-    echo "HL7_TCR_URL=$HL7_TCR_URL" >> $config_file
-    echo "HL7_TCR_OUT_FORMAT=$HL7_TCR_OUT_FORMAT" >> $config_file
-    echo "HL7_RECEIVING_APPLICATION=$HL7_RECEIVING_APPLICATION" >> $config_file
-    echo "HL7_RECEIVING_FACILITY=$HL7_RECEIVING_FACILITY" >> $config_file
-    echo "HL7_RIS_IP=$HL7_RIS_IP" >> $config_file
-    echo "HL7_RIS_PORT=$HL7_RIS_PORT" >> $config_file
 }
 
 #now we search for all config files wich end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user anwser no then we exit 1. If user select a file, we load the content to set env vars.
