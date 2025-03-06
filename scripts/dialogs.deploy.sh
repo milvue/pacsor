@@ -61,27 +61,44 @@ function ask_version(){
 
 #we do the same with ask_env_url,  a predifined single radio list (using whiptail radiolist) of integrator urls, prodict.milvue.com, staging.milvue.com, dev.milvue.com, other. if other is selected, we ask for the url ask_integrator_url
 function ask_env_url() {
-    if [ "$1" = "wizard" ]; then
-        wizard="true"
+    local wizard="$1"
+    local product="$GLOBAL_PRODUCT"
+
+    if [ "$wizard" = "true" ]; then
         ok_button="Next"
         cancel_button="Cancel"
     else
         ok_button="Ok"
         cancel_button="Cancel"
-        wizard="false"
     fi
-    # Map friendly names to URLs
-    declare -A urls=(
-        ["Azure-prod"]="https://k8s.predict.milvue.com"
-        ["Azure-preprod"]="https://azure-preprod.predict.milvue.com"
-        ["Azure-beta"]="https://azure-beta.predict.milvue.com"
-        ["GCP-precert"]="https://precert.predict.milvue.com"
-        #["GCP-staging"]="https://staging.predict.milvue.com"
-        ["localor"]="http://integrator:8080"
-        ["other"]="other"
-    )
+
+    declare -A urls=()
+    declare -a options=()
+
+    case "$product" in
+        "smarttrauma")
+            urls=(
+                ["localor"]="http://integrator:8080"
+                ["other"]="other"
+            )
+            options=("localor" "other")
+            ;;
+        *)
+            urls=(
+                ["Azure-prod"]="https://k8s.predict.milvue.com"
+                ["Azure-preprod"]="https://azure-preprod.predict.milvue.com"
+                ["Azure-beta"]="https://azure-beta.predict.milvue.com"
+                ["GCP-precert"]="https://precert.predict.milvue.com"
+                #["GCP-staging"]="https://staging.predict.milvue.com"
+                ["localor"]="http://integrator:8080"
+                ["other"]="other"
+            )
+            options=("Azure-prod" "Azure-preprod" "Azure-beta" "GCP-precert" "localor" "other")
+            ;;
+    esac
+
     
-    local options=("Azure-prod" "Azure-preprod" "Azure-beta" "GCP-precert" "localor" "other")
+    
     local prompt="Select environement:"
     local default_status
     local choice

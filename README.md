@@ -3,9 +3,10 @@
 PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for efficient handling and processing of medical images. Its primary functions include receiving DICOM images, sending them to Milvue applications, retrieving results, and then dispatching these results to one or multiple DICOM receivers.
 
 ## History
-| Date       | Version | Description                               | Identifier |
-|------------|---------|-------------------------------------------|------------|
-|2024-09-24  | 2.4.0   | fix output cleaning for multicore         | cf0ba257   |
+| Date       | Version | Description                                    | Identifier |
+|------------|---------|------------------------------------------------|------------|
+|2024-09-24  | 2.4.0   | fix output cleaning for multicore              | cf0ba257   |
+|2025-03-06  | 2.5.0   | support multiple products and new HL7 service  | 2aa45208   |
 
 
 ## Prerequisites
@@ -22,7 +23,12 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
    git clone https://github.com/milvue/pacsor.git
    ```
 
-3. Run the `setup.sh` script to create new environment and compose files. This script will prompt you for the necessary settings and create a new `.env.xxx` file in the `env-files` directory, then it will create a symbolic link to this newly created `.env.xxx` file in the root directory.
+2. To configure a specific product, execute its corresponding setup script. 
+   For Milvue Suite, run `setup.sh`. 
+   For Product2, run `.setup.smarttrauma.sh`. 
+   The scripts follow a similar process: they generate a new environment and a compose file. The main distinction lies in the available environments for each product. 
+   
+   In each case, the script will prompt you for the necessary settings and create a new `.env.xxx` file in the `env-files` directory, then it will create a symbolic link to this newly created `.env.xxx` file in the root directory.
 
    ``` bash
    bash ./scripts/setup.sh
@@ -33,9 +39,9 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 
    The script will then generate a new `.env` file with the format `.env.{CLIENT_NAME}`.
 
-4. Selecting "Display current configuration" will display the current configuration.
+3. Selecting "Display current configuration" will display the current configuration.
 
-5. Finally, launch `pacsor` by running `docker compose`:
+4. Finally, launch `pacsor` by running `docker compose`:
    
    ``` bash
    docker compose up -d
