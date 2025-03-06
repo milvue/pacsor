@@ -23,7 +23,12 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
    git clone https://github.com/milvue/pacsor.git
    ```
 
-3. Run the `setup.sh` script to create new environment and compose files. This script will prompt you for the necessary settings and create a new `.env.xxx` file in the `env-files` directory, then it will create a symbolic link to this newly created `.env.xxx` file in the root directory.
+2. To configure a specific product, execute its corresponding setup script. 
+   For Milvue Suite, run `setup.sh`. 
+   For Product2, run `.setup.smarttrauma.sh`. 
+   The scripts follow a similar process: they generate a new environment and a compose file. The main distinction lies in the available environments for each product. 
+   
+   In each case, the script will prompt you for the necessary settings and create a new `.env.xxx` file in the `env-files` directory, then it will create a symbolic link to this newly created `.env.xxx` file in the root directory.
 
    ``` bash
    bash ./scripts/setup.sh
@@ -34,9 +39,9 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 
    The script will then generate a new `.env` file with the format `.env.{CLIENT_NAME}`.
 
-4. Selecting "Display current configuration" will display the current configuration.
+3. Selecting "Display current configuration" will display the current configuration.
 
-5. Finally, launch `pacsor` by running `docker compose`:
+4. Finally, launch `pacsor` by running `docker compose`:
    
    ``` bash
    docker compose up -d
