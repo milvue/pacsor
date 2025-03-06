@@ -6,7 +6,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 | Date       | Version | Description                                    | Identifier |
 |------------|---------|------------------------------------------------|------------|
 |2024-09-24  | 2.4.0   | fix output cleaning for multicore              | cf0ba257   |
-|2025-03-06  | 2.5.0   | support multiple p^roducts and new HL7 service | 2aa45208   |
+|2025-03-06  | 2.5.0   | support multiple products and new HL7 service  | 2aa45208   |
 
 
 ## Prerequisites
