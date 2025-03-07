@@ -100,6 +100,9 @@ To enable:
 
 The field `CALLBACK_URLS` in the `core` section allows PACSOR to send results to several PACS systems. For instance, if you have two services `storescu-1` and `storescu-2` with different PACS configurations, you can configure `core` to send results to these two PACS by setting `CALLBACK_URLS=http://storescu-1:8000,http://storescu-2:8000`.
 
+### HL7 settings
+
+The `hl7` service, defined within `compose.hl7.yaml`, facilitates the sending of HL7 messages through `pacsor` logs and featuring also TechCare Trauma report. By default, this service is disabled. To activate it, users must first ensure the existence of the `.env` and `compose.yaml` files through `setup.sh`. Subsequently, the relevant `.config` file in script folder should be edited to set `HL7_ENABLE=true`  and the necessary HL7 parameters—`HL7_RECEIVING_APPLICATION`, `HL7_RECEIVING_FACILITY`, `HL7_RIS_IP` and `HL7_RIS_PORT`-must be defined. Finally, executing once more the script `setup.sh`will apply these configurations, resulting in the population of the `.env` with the specified HL7 variables.
 
 > **WARNING**:
 > If you create an other storescu service, you will need to edit `docker-compose.yml`  and add manually a new service. You will need also to set the `PACS_IP`, `PACS_PORT`, `PACS_AET` in order to fit the needed configuration.
