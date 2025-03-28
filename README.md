@@ -142,7 +142,7 @@ By default, this service is disabled. To activate it, users shall:
    ```
 
 **HTML messages**:
-The report section within the H7L message is amenable to HTML encoding. The procedure is as follows:
+The report section within the H7L message support the HTML encoding. The procedure is as follows:
  
 1. **Set `HL7_TCR_OUT_FORMAT`**, set the environment variable in `.env` file to `HTML`
 2. **Add the volume for the pre-saved files**, the user shall define the volume in the `compose.hl7.yaml` 
