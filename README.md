@@ -125,7 +125,7 @@ By default, this service is disabled. To activate it, users shall:
 | HL7_LANGUAGE                |                      FR                        | The language code for HL7 messages. It can be "EN" or "FR"                  |
 | HL7_INCLUDE_TCR             |                     false                      | A boolean indicating whether to include TechCare Report                     |
 | HL7_TCR_URL                 |        https://k8s.report.milvue.com/report    | The URL for the TCR.                                                        |
-| HL7_TCR_OUT_FORMAT          |                      B64                       | The output format for TechCare Report. It can be "B64" or "PLAIN"           |
+| HL7_TCR_OUT_FORMAT          |                      B64                       | The output format for TechCare Report. It can be "B64", "PLAIN" or "HTML"   |
 
 4. **Re-run the setup script**: to actuate the edits made in the `{client.name}.config` file and resulting in the population of the `.env` with the specified HL7 environment variables defined above. 
 
@@ -140,6 +140,35 @@ By default, this service is disabled. To activate it, users shall:
     ``` bash
    docker exec "HL7_service_container" curl http://localhost:8000/config/
    ```
+
+**HTML messages**:
+The report section within the H7L message is amenable to HTML encoding. The procedure is as follows:
+ 
+1. **Set `HL7_TCR_OUT_FORMAT`**, set the environment variable in `.env` file to `HTML`
+2. **Add the volume for the pre-saved files**, the user shall define the volume in the `compose.hl7.yaml` 
+   
+   ``` hl7:
+         volumes:
+            - <current_directory/config_files/>:/home/custom/ 
+   ```
+
+   This is the hierarchy:
+
+   ```
+   |_ <current_directory>
+    |_ <config_file>
+        |_ <custom_config>.json
+        |_ <custom_template>.py
+   ```
+3. **Define pre-saved template**, define `LOAD_TEMPLATE_AT_INIT` in `compose.hl7.yaml` equal to the name of the py file (without extention) in the environment.
+4. **Define pre-saved configuration**, define `LOAD_CONFIG_AT_INIT` in `compose.hl7.yaml` equal to the name of the JSON file (without extention) in the environment. The configuration can be loaded real-time using the command
+
+  ``` bash
+   docker exec "HL7_service_container" curl -X POST http://localhost:8000/config/load/{JSON_file_without_extension}
+  ```
+
+> **WARNING**:
+> The configuration file defined in `LOAD_CONFIG_AT_INIT` has highest priority than the configuration defined in the `.env` file
 
 > **WARNING**:
 > If you create an other storescu service, you will need to edit `docker-compose.yml`  and add manually a new service. You will need also to set the `PACS_IP`, `PACS_PORT`, `PACS_AET` in order to fit the needed configuration.
