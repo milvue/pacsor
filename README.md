@@ -100,9 +100,12 @@ To enable:
 
 The field `CALLBACK_URLS` in the `core` section allows PACSOR to send results to several PACS systems. For instance, if you have two services `storescu-1` and `storescu-2` with different PACS configurations, you can configure `core` to send results to these two PACS by setting `CALLBACK_URLS=http://storescu-1:8000,http://storescu-2:8000`.
 
+> **WARNING**:
+> If you create an other storescu service, you will need to edit `docker-compose.yml`  and add manually a new service. You will need also to set the `PACS_IP`, `PACS_PORT`, `PACS_AET` in order to fit the needed configuration.
+
 ### HL7 settings
 
-The `hl7` service, defined within `compose.hl7.yaml`, facilitates the sending of HL7 messages through `pacsor` logs and featuring also TechCare Trauma report. 
+The `hl7` service, defined within `compose.hl7.yaml`, facilitates the sending of HL7 messages through `pacsor` logs and featuring also TechCare Report. 
 By default, this service is disabled. To activate it, users shall: 
 
 1. **Execute the setup script**:
@@ -141,11 +144,14 @@ By default, this service is disabled. To activate it, users shall:
    docker exec "HL7_service_container" curl http://localhost:8000/config/
    ```
 
-**HTML messages**:
-The report section within the H7L message support the HTML encoding. The procedure is as follows:
- 
-1. **Set `HL7_TCR_OUT_FORMAT`**, set the environment variable in `.env` file to `HTML`
-2. **Add the volume for the pre-saved files**, the user shall define the volume in the `compose.hl7.yaml` 
+**HL7 LOAD CONFIGURATION AND TEMPLATE**
+
+The `compose.hl7.yaml` file has two fields which allow to load customizable template and configuration.
+
+- `config.json`: it allows the user to create customizable configuration for the HL7 like above that can be easily loaded
+- `template.py`: it allows the user to customize HL7 sections 
+
+1. **Add the volume for the pre-saved files**, the user shall define the volume in the `compose.hl7.yaml` 
    
    ``` hl7:
          volumes:
@@ -156,23 +162,29 @@ The report section within the H7L message support the HTML encoding. The procedu
 
    ```
    |_ <current_directory>
-    |_ <config_file>
+    |_ <conf>
         |_ <custom_config>.json
         |_ <custom_template>.py
    ```
-3. **Define pre-saved template**, define `LOAD_TEMPLATE_AT_INIT` in `compose.hl7.yaml` equal to the name of the py file (without extention) in the environment.
-4. **Define pre-saved configuration**, define `LOAD_CONFIG_AT_INIT` in `compose.hl7.yaml` equal to the name of the JSON file (without extention) in the environment. The configuration can be loaded real-time using the command
+
+2. **Define pre-saved template**, define `LOAD_TEMPLATE_AT_INIT` in `compose.hl7.yaml` equal to the name of the py file (without extention) in the environment.
+3. **Define pre-saved configuration**, define `LOAD_CONFIG_AT_INIT` in `compose.hl7.yaml` equal to the name of the JSON file (without extention) in the environment. The configuration can be loaded real-time using the command
 
   ``` bash
    docker exec "HL7_service_container" curl -X POST http://localhost:8000/config/load/{JSON_file_without_extension}
   ```
-
+There 
 > **WARNING**:
 > The configuration file defined in `LOAD_CONFIG_AT_INIT` has highest priority than the configuration defined in the `.env` file
 
-> **WARNING**:
-> If you create an other storescu service, you will need to edit `docker-compose.yml`  and add manually a new service. You will need also to set the `PACS_IP`, `PACS_PORT`, `PACS_AET` in order to fit the needed configuration.
-  
+
+**HTML messages**:
+The report section within the HL7 message support the HTML encoding. The procedure is as follows:
+ 
+1. **Set `HL7_TCR_OUT_FORMAT`**, set the environment variable in `.env` file to `HTML`
+2. **Retrieve the HTML report**, once the user received back the HL7 message it will contain the HTML message in the report section `CRHTML`
+3. **De-code the HTML report**, if the user wants to read easily the HTML code, this is possible by [de-coding](https://www.base64decode.org) the portion of code after `^Base64^` and before `||||||`
+4. **Save the decoded HTML report**, the user shall copy-paste the html code and save it in a .html file 
 
 ## Running PACSOR
 

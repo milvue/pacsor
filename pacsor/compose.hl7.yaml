@@ -28,9 +28,12 @@ services:
       SIUID_IN_OBX1: ${SIUID_IN_OBX1:-true}
       OBX_UPPERCASE: ${OBX_UPPERCASE:-true}
       HTTP_TIMEOUT: ${HTTP_TIMEOUT:-600}
+      LOAD_TEMPLATE_AT_INIT: template
+      LOAD_CONFIG_AT_INIT: config
         
     volumes:
       - outputs:/outputs
+      - ../conf:/home/custom/  
 
     healthcheck:
       test: [ "CMD-SHELL", "curl -X GET hl7:8000/healthcheck" ]
