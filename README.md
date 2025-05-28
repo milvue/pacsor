@@ -7,6 +7,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 |------------|---------|------------------------------------------------|------------|
 |2024-09-24  | 2.4.0   | fix output cleaning for multicore              | cf0ba257   |
 |2025-03-06  | 2.5.0   | support multiple products and new HL7 service  | 2aa45208   |
+|2025-03-06  | 2.6.0   | Add support to hybrid mode                     | 2aa45208   |
 
 
 ## Prerequisites
@@ -207,6 +208,25 @@ To operate PACSOR, the following Docker Compose commands are used:
 	- `docker logs -f [container_name_or_id]`
 	- To monitor real-time logs from a specific container, use this command. Replace `[container_name_or_id]` with the actual name or ID of the container you want to monitor.
 
+### Hybrid Mode
+
+The latest HL7 update modularizes the reportor service by decoupling it with Milvue Suite. This separation streamlines the editing process for the first component, making it readily deployable in Milvue Suite's on-premise version. In this setup, the on-premise Milvue Suite instance sends prediction requests back to the cloud-based reportor. Reportor then relays these predictions to the PACSOR. Consequently, while predictions are processed locally, report generation remains in the cloud due to reportor's cloud deployment.
+
+To activate this functionality, a few modifications are required on both ends:
+
+- **on-premise side**
+  - The `clients.yaml` file shall define a token that exists on cloud and which contains the `u_filter Report`
+  - The `compose.base.yaml` file shall define `REPORTOR_URL` equal to the URL of the cloud report in the integrator service
+- **PACSOR side**
+  - the `.env` shall define `USE_PREDICTION_ID=true`
+  - the `compose.hl7.yaml` shall define `USE_PREDICTION_ID: ${USE_PREDICTION_ID}`
+
+The user can get the report by API:
+
+  ``` bash
+<REPORTOR_URL>/report?study_prediction_id=<study_prediction_id>
+
+  ``` 
 ## Advanced Usage
 
 ### 1. How to install a specific docker-compose version
