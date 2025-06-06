@@ -83,6 +83,13 @@ function ask_env_url() {
             )
             options=("localor" "other")
             ;;
+        "tct")
+            urls=(
+                ["vmazure-us"]="https://tctus.predict.milvue.com"
+                ["other"]="other"
+            )
+            options=("vmazure-us" "other")
+            ;;
         *)
             urls=(
                 ["Azure-prod"]="https://k8s.predict.milvue.com"
