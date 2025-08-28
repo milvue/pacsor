@@ -9,7 +9,7 @@ services:
       SEN_FAC: ${SENDING_FACILITY:-MILVUE}
       REC_APP: ${RECEIVING_APPLICATION:?need valid RECEIVING_APPLICATION}
       REC_FAC: ${RECEIVING_FACILITY:?need valid RECEIVING_FACILITY}
-      HL7_LANG: ${HL7_LANGUAGE:-FR}
+      HL7_LANG: ${HL7_LANGUAGE:-FR} # Only applies to the MilvueSuite HL7 messages (not to the report)
       RIS_HOST: ${RIS_HOST_IP:?need valid RIS_HOST IP address}
       RIS_PORT: ${RIS_HOST_PORT:?need valid RIS_PORT}
       RIS_TIMEOUT: ${RIS_TIMEOUT:-15}

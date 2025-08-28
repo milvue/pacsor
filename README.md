@@ -119,17 +119,17 @@ By default, this service is disabled. To activate it, users shall:
 
 3. **Configure HL7 environment variables**: Fill the variable in the relevant `{client.name}.config` file in script folder
 
-| Parameter                   | Default Value                                  | Description                                                                 |
-|-----------------------------|------------------------------------------------|-----------------------------------------------------------------------------|
-| HL7_ENABLE                  |                     false                      | A boolean indicating whether to enable HL7 message service                  |
-| HL7_RECEIVING_APPLICATION   |                     empty                      | The receiving application name for HL7 messages.                            |
-| HL7_RECEIVING_FACILITY      |                     empty                      | The receiving facility name for HL7 messages.                               |
-| HL7_RIS_IP                  |                     empty                      | The IP address of the Radiology Information System (RIS).                   |
-| HL7_RIS_PORT                |                     empty                      | The port number used to communicate with the RIS.                           |
-| HL7_LANGUAGE                |                      FR                        | The language code for HL7 messages. It can be "EN" or "FR"                  |
-| HL7_INCLUDE_TCR             |                     false                      | A boolean indicating whether to include TechCare Report                     |
-| HL7_TCR_URL                 |        https://k8s.report.milvue.com/report    | The URL for the TCR.                                                        |
-| HL7_TCR_OUT_FORMAT          |                      B64                       | The output format for TechCare Report. It can be "B64", "PLAIN" or "HTML"   |
+| Parameter                   | Default Value                                  | Description                                                                                                                  |
+|-----------------------------|------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|  
+| HL7_ENABLE                  |                     false                      | A boolean indicating whether to enable HL7 message service                                                                   |
+| HL7_RECEIVING_APPLICATION   |                     empty                      | The receiving application name for HL7 messages.                                                                             |
+| HL7_RECEIVING_FACILITY      |                     empty                      | The receiving facility name for HL7 messages.                                                                                | 
+| HL7_RIS_IP                  |                     empty                      | The IP address of the Radiology Information System (RIS).                                                                    |
+| HL7_RIS_PORT                |                     empty                      | The port number used to communicate with the RIS.                                                                            |
+| HL7_LANGUAGE                |                      FR                        | The language code for HL7 messages. It can be "EN" or "FR". It only applies to MilvueSuite HL7 messages (not to the report)  |
+| HL7_INCLUDE_TCR             |                     false                      | A boolean indicating whether to include TechCare Report                                                                      |
+| HL7_TCR_URL                 |        https://k8s.report.milvue.com/report    | The URL for the TCR.                                                                                                         |
+| HL7_TCR_OUT_FORMAT          |                      B64                       | The output format for TechCare Report. It can be "B64", "PLAIN" or "HTML"                                                    |
 
 4. **Re-run the setup script**: to actuate the edits made in the `{client.name}.config` file and resulting in the population of the `.env` with the specified HL7 environment variables defined above. 
 
