@@ -31,7 +31,7 @@ services:
       #LOAD_TEMPLATE_AT_INIT: template
       #LOAD_CONFIG_AT_INIT: config
 
-    command: ["hypercorn", "app.main:app", "--workers", "5", "--bind", "0.0.0.0:8000"]
+    command: ["hypercorn", "app.main:app", "--workers", "5", "--bind", "0.0.0.0:8000"] # Add this line to rise the number of workers from 1 to 5 (to better handle the Hl7 flow)
         
     volumes:
       - outputs:/outputs
