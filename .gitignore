@@ -2,4 +2,5 @@ env-files/.env.*
 scripts/*.config
 .env
 compose.yaml
-*.sh
+start.sh
+admin.pull.and.push.images.sh

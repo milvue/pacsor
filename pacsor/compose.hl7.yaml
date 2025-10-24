@@ -9,7 +9,7 @@ services:
       SEN_FAC: ${SENDING_FACILITY:-MILVUE}
       REC_APP: ${RECEIVING_APPLICATION:?need valid RECEIVING_APPLICATION}
       REC_FAC: ${RECEIVING_FACILITY:?need valid RECEIVING_FACILITY}
-      HL7_LANG: ${HL7_LANGUAGE:-FR}
+      HL7_LANG: ${HL7_LANGUAGE:-FR} # Only applies to the MilvueSuite HL7 messages (not to the report)
       RIS_HOST: ${RIS_HOST_IP:?need valid RIS_HOST IP address}
       RIS_PORT: ${RIS_HOST_PORT:?need valid RIS_PORT}
       RIS_TIMEOUT: ${RIS_TIMEOUT:-15}
@@ -31,6 +31,8 @@ services:
       #LOAD_TEMPLATE_AT_INIT: template
       #LOAD_CONFIG_AT_INIT: config
       USE_PREDICTION_ID: ${USE_PREDICTION_ID:-false}
+
+    command: ["hypercorn", "app.main:app", "--workers", "5", "--bind", "0.0.0.0:8000"] # Add this line to rise the number of workers from 1 to 5 (to better handle the Hl7 flow)
         
     volumes:
       - outputs:/outputs
