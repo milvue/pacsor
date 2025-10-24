@@ -53,7 +53,7 @@ services:
       API_URL: ${API_URL:?need valid URL}
       TOKEN: ${TOKEN:?can't be empty}
       CALLBACK_URLS: ${CALLBACK_URLS:-http://storescu:8000}
-      NO_DUPLICATE_UPLOAD: ${NO_DUPLICATE_UPLOAD:-true}
+      NO_DUPLICATE_UPLOAD: ${NO_DUPLICATE_UPLOAD:-false}
       INFERENCE_COMMANDS: ${INFERENCE_COMMANDS:-smarturgences,smartxpert}
       <<: *postgres-config
     depends_on:
@@ -88,6 +88,22 @@ services:
       retries: 10
     networks:
       - pacsor
+
+  admin:
+    image: "milvue/pacsor-admin:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    depends_on:
+      core:
+        condition: service_healthy
+    restart: on-failure
+    ports:
+      - "7000:8080"
+    healthcheck:
+      test: [ "CMD", "./healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - pacsor 
   
 volumes:
   inputs:

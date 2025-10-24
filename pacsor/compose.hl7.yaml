@@ -9,7 +9,7 @@ services:
       SEN_FAC: ${SENDING_FACILITY:-MILVUE}
       REC_APP: ${RECEIVING_APPLICATION:?need valid RECEIVING_APPLICATION}
       REC_FAC: ${RECEIVING_FACILITY:?need valid RECEIVING_FACILITY}
-      HL7_LANG: ${HL7_LANGUAGE:-FR} # Only applies to the MilvueSuite HL7 messages (not to the report)
+      HL7_LANG: ${HL7_LANGUAGE:-FR}
       RIS_HOST: ${RIS_HOST_IP:?need valid RIS_HOST IP address}
       RIS_PORT: ${RIS_HOST_PORT:?need valid RIS_PORT}
       RIS_TIMEOUT: ${RIS_TIMEOUT:-15}
@@ -19,8 +19,8 @@ services:
       TOKEN: ${TOKEN:?can't be empty}
       REPORT_FORMAT: ${TECHCARE_REPORT_FORMAT:-B64}
       DEF_PID_ISSUER: ${DEF_PID_ISSUER:-MILVUE}
-      LOG_LEVEL: ${HL7_LOG_LEVEL:-WARN}
-      GCP_LOGS: ${GCP_LOGS:-true}
+      LOG_LEVEL: ${HL7_LOG_LEVEL:-INFO}
+      GCP_LOGS: ${GCP_LOGS:-false}
       POPULATE_PID: ${POPULATE_PID:-true}
       POPULATE_PV1: ${POPULATE_PV1:-false}
       POPULATE_ORC: ${POPULATE_ORC:-true}
@@ -28,14 +28,12 @@ services:
       SIUID_IN_OBX1: ${SIUID_IN_OBX1:-true}
       OBX_UPPERCASE: ${OBX_UPPERCASE:-true}
       HTTP_TIMEOUT: ${HTTP_TIMEOUT:-600}
-      #LOAD_TEMPLATE_AT_INIT: template
-      #LOAD_CONFIG_AT_INIT: config
-
-    command: ["hypercorn", "app.main:app", "--workers", "5", "--bind", "0.0.0.0:8000"] # Add this line to rise the number of workers from 1 to 5 (to better handle the Hl7 flow)
-        
+      INCLUDE_DETECTIONS_FINDINGS: true
+      DETECTION_INFERENCE_COMMAND: "smarturgences"
+      INCLUDE_MEASURES_FINDINGS: true
+      MEASURES_INFERENCE_COMMAND: "smartxpert"
     volumes:
       - outputs:/outputs
-      - ../conf:/home/custom/  
 
     healthcheck:
       test: [ "CMD-SHELL", "curl -X GET hl7:8000/healthcheck" ]
