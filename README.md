@@ -4,13 +4,13 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 
 ## History
 
-| Date       | Version | Description                                       | Identifier |
-| ---------- | ------- | ------------------------------------------------- | ---------- |
-| 2024-09-24 | 2.4.0   | fix output cleaning for multicore                 | cf0ba257   |
-| 2025-03-06 | 2.5.0   | support multiple products and new HL7 service     | 2aa45208   |
-| 2025-03-21 | 2.5.1   | (hl7) add formating of report for hl7 html format | 06903bb1   |
-| 2025-03-21 | 2.5.2   | Add Support to hybrid mode                        | 9bafc995   |
-| 2025-10-27 | 2.6.0   | Enhances reliability enables the detection and measures inference commands. Removed hybrid mode |       |
+| Date       | Version | Description                                                                                     | Identifier |
+| ---------- | ------- | ----------------------------------------------------------------------------------------------- | ---------- |
+| 2024-09-24 | 2.4.0   | fix output cleaning for multicore                                                               | cf0ba257   |
+| 2025-03-06 | 2.5.0   | support multiple products and new HL7 service                                                   | 2aa45208   |
+| 2025-03-21 | 2.5.1   | (hl7) add formating of report for hl7 html format                                               | 06903bb1   |
+| 2025-03-21 | 2.5.2   | Add Support to hybrid mode                                                                      | 9bafc995   |
+| 2025-10-27 | 2.6.0   | Enhances reliability enables the detection and measures inference commands. Removed hybrid mode | f2544465   |
 
 ## Prerequisites
 
@@ -153,15 +153,17 @@ By default, this service is disabled. To activate it, users shall:
    ```bash
    docker exec "HL7_service_container" curl http://localhost:8000/config/
    ```
+
 **DETECTION_INFERENCE_COMMAND and MEASURES_INFERENCE_COMMAND**
 
 The `compose.hl7.yaml` includes a feature to define the product that we want to activate, this can be activated by 4 parameters:
 
-| Parameter                     | Default Value                           | Description            |
-| INCLUDE_DETECTIONS_FINDINGS   | true                                    | Enable detections.     |
-| DETECTION_INFERENCE_COMMAND   | smarturgences                           | Configure the product for detection. It can be: smarturgences, detection, smartchest, trauma. |
-| INCLUDE_MEASURES_FINDINGS     | true                                    | Enable measures        |
-| MEASURE                       | smartxpert                              | Configure the product for measures. It can be: smartxpert, measures. |
+| Parameter                   | Default Value | Description                                                                                   |
+| --------------------------- | ------------- | --------------------------------------------------------------------------------------------- |
+| INCLUDE_DETECTIONS_FINDINGS | true          | Enable detections.                                                                            |
+| DETECTION_INFERENCE_COMMAND | smarturgences | Configure the product for detection. It can be: smarturgences, detection, smartchest, trauma. |
+| INCLUDE_MEASURES_FINDINGS   | true          | Enable measures                                                                               |
+| MEASURE                     | smartxpert    | Configure the product for measures. It can be: smartxpert, measures.                          |
 
 **HL7 LOAD CONFIGURATION AND TEMPLATE**
 
@@ -233,14 +235,14 @@ To operate PACSOR, the following Docker Compose commands are used:
 This feature allows to manually relaunch a study that has already been sent to pacsor without running `docker compose down --volumes`.
 
 - **Configure PACSOR**:
-   - Setup admin module in PACSOR with port exposed and CORE_URL set 
+  - Setup admin module in PACSOR with port exposed and CORE_URL set
 - **Starting PACSOR**:
   - `docker compose up -d`
   - This command starts the PACSOR application in detached mode, allowing it to run in the background.
 - **Sent exam**
   - Run predictions and wait for results
 - **Relauch the study**
-  - relaunch command on `http://admin:PORT/relaunch/{study_instance_uid}`
+  - Relaunch command on `http://admin:PORT/relaunch/{study_instance_uid}`
 
 ## Advanced Usage
 
