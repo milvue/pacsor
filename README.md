@@ -137,7 +137,7 @@ By default, this service is disabled. To activate it, users shall:
 | HL7_RIS_PORT              | empty                                | The port number used to communicate with the RIS.                                                                           |
 | HL7_LANGUAGE              | FR                                   | The language code for HL7 messages. It can be "EN" or "FR". It only applies to MilvueSuite HL7 messages (not to the report) |
 | HL7_INCLUDE_TCR           | false                                | A boolean indicating whether to include TechCare Report                                                                     |
-| HL7_TCR_URL               | https://k8s.report.milvue.com/report | The URL for the TCR.                                                                                                        |
+| HL7_TCR_URL               | https://app.report.milvue.com/report | The URL for the TCR.                                                                                                        |
 | HL7_TCR_OUT_FORMAT        | B64                                  | The output format for TechCare Report. It can be "B64", "PLAIN" or "HTML"                                                   |
 
 4. **Re-run the setup script**: to actuate the edits made in the `{client.name}.config` file and resulting in the population of the `.env` with the specified HL7 environment variables defined above.
@@ -158,11 +158,12 @@ By default, this service is disabled. To activate it, users shall:
 
 The `compose.hl7.yaml` includes a feature to define the product that we want to activate, this can be activated by 4 parameters:
 
-| Parameter                     | Default Value                           | Description            |
-| INCLUDE_DETECTIONS_FINDINGS   | true                                    | Enable detections.     |
-| DETECTION_INFERENCE_COMMAND   | smarturgences                           | Configure the product for detection. It can be: smarturgences, detection, smartchest, trauma. |
-| INCLUDE_MEASURES_FINDINGS     | true                                    | Enable measures        |
-| MEASURE_INFERENCE_COMMAND     | smartxpert                              | Configure the product for measures. It can be: smartxpert, measures. |
+| Parameter                   | Default Value | Description                                                                                   |
+| --------------------------- | ------------- | --------------------------------------------------------------------------------------------- |
+| INCLUDE_DETECTIONS_FINDINGS | true          | Enable detections.                                                                            |
+| DETECTION_INFERENCE_COMMAND | smarturgences | Configure the product for detection. It can be: smarturgences, detection, smartchest, trauma. |
+| INCLUDE_MEASURES_FINDINGS   | true          | Enable measures                                                                               |
+| MEASURE_INFERENCE_COMMAND   | smartxpert    | Configure the product for measures. It can be: smartxpert, measures.                          |
 
 **HL7 LOAD CONFIGURATION AND TEMPLATE**
 

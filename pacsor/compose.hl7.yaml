@@ -39,6 +39,7 @@ services:
 
     volumes:
       - outputs:/outputs
+      - ../conf:/home/custom/  
 
     healthcheck:
       test: [ "CMD-SHELL", "curl -X GET hl7:8000/healthcheck" ]
