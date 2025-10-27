@@ -158,12 +158,11 @@ By default, this service is disabled. To activate it, users shall:
 
 The `compose.hl7.yaml` includes a feature to define the product that we want to activate, this can be activated by 4 parameters:
 
-| Parameter                   | Default Value | Description                                                                                   |
-| --------------------------- | ------------- | --------------------------------------------------------------------------------------------- |
-| INCLUDE_DETECTIONS_FINDINGS | true          | Enable detections.                                                                            |
-| DETECTION_INFERENCE_COMMAND | smarturgences | Configure the product for detection. It can be: smarturgences, detection, smartchest, trauma. |
-| INCLUDE_MEASURES_FINDINGS   | true          | Enable measures                                                                               |
-| MEASURE                     | smartxpert    | Configure the product for measures. It can be: smartxpert, measures.                          |
+| Parameter                     | Default Value                           | Description            |
+| INCLUDE_DETECTIONS_FINDINGS   | true                                    | Enable detections.     |
+| DETECTION_INFERENCE_COMMAND   | smarturgences                           | Configure the product for detection. It can be: smarturgences, detection, smartchest, trauma. |
+| INCLUDE_MEASURES_FINDINGS     | true                                    | Enable measures        |
+| MEASURE_INFERENCE_COMMAND     | smartxpert                              | Configure the product for measures. It can be: smartxpert, measures. |
 
 **HL7 LOAD CONFIGURATION AND TEMPLATE**
 
@@ -232,17 +231,7 @@ To operate PACSOR, the following Docker Compose commands are used:
 
 ### Manual Study Relaunch
 
-This feature allows to manually relaunch a study that has already been sent to pacsor without running `docker compose down --volumes`.
-
-- **Configure PACSOR**:
-  - Setup admin module in PACSOR with port exposed and CORE_URL set
-- **Starting PACSOR**:
-  - `docker compose up -d`
-  - This command starts the PACSOR application in detached mode, allowing it to run in the background.
-- **Sent exam**
-  - Run predictions and wait for results
-- **Relauch the study**
-  - Relaunch command on `http://admin:PORT/relaunch/{study_instance_uid}`
+This feature allows to manually relaunch a study that has already been sent to pacsor without running `docker compose down --volumes` by running the command on `http://admin:PORT/relaunch/{study_instance_uid}` for any exam that has been sent previously.
 
 ## Advanced Usage
 
