@@ -8,7 +8,7 @@ MAIN_TITLE="Milvue Suite Gateway Deployment Configuration Tool v$SCRIPT_VERSION"
 
 # Default values
 VERSION_NAME="latest"
-INTEGRATOR_URL="https://k8s.predict.milvue.com"
+INTEGRATOR_URL="https://predict.milvue.com"
 USE_SIGNED_URL="true"
 SENDER_CALLBACKS_URL="http://storescu:8000"
 INF_COMM="smarturgences,smartxpert"
@@ -21,7 +21,7 @@ ISLOCALOR=false
 HL7_ENABLE="false"
 HL7_LANGUAGE="FR"
 HL7_INCLUDE_TCR="false"
-HL7_TCR_URL="https://k8s.report.milvue.com/report"
+HL7_TCR_URL="https://app.report.milvue.com/report"
 HL7_TCR_OUT_FORMAT="B64"
 
 # values to be set

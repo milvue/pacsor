@@ -4,12 +4,13 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 
 ## History
 
-| Date       | Version | Description                                       | Identifier |
-| ---------- | ------- | ------------------------------------------------- | ---------- |
-| 2024-09-24 | 2.4.0   | fix output cleaning for multicore                 | cf0ba257   |
-| 2025-03-06 | 2.5.0   | support multiple products and new HL7 service     | 2aa45208   |
-| 2025-03-21 | 2.5.1   | (hl7) add formating of report for hl7 html format | 06903bb1   |
-| 2025-03-21 | 2.5.2   | Add Support to hybrid mode                        | 9bafc995   |
+| Date       | Version | Description                                                                                     | Identifier |
+| ---------- | ------- | ----------------------------------------------------------------------------------------------- | ---------- |
+| 2024-09-24 | 2.4.0   | fix output cleaning for multicore                                                               | cf0ba257   |
+| 2025-03-06 | 2.5.0   | support multiple products and new HL7 service                                                   | 2aa45208   |
+| 2025-03-21 | 2.5.1   | (hl7) add formating of report for hl7 html format                                               | 06903bb1   |
+| 2025-03-21 | 2.5.2   | Add Support to hybrid mode                                                                      | 9bafc995   |
+| 2025-10-27 | 2.6.0   | Enhances reliability enables the detection and measures inference commands. Removed hybrid mode | f2544465   |
 
 ## Prerequisites
 
@@ -136,7 +137,7 @@ By default, this service is disabled. To activate it, users shall:
 | HL7_RIS_PORT              | empty                                | The port number used to communicate with the RIS.                                                                           |
 | HL7_LANGUAGE              | FR                                   | The language code for HL7 messages. It can be "EN" or "FR". It only applies to MilvueSuite HL7 messages (not to the report) |
 | HL7_INCLUDE_TCR           | false                                | A boolean indicating whether to include TechCare Report                                                                     |
-| HL7_TCR_URL               | https://k8s.report.milvue.com/report | The URL for the TCR.                                                                                                        |
+| HL7_TCR_URL               | https://app.report.milvue.com/report | The URL for the TCR.                                                                                                        |
 | HL7_TCR_OUT_FORMAT        | B64                                  | The output format for TechCare Report. It can be "B64", "PLAIN" or "HTML"                                                   |
 
 4. **Re-run the setup script**: to actuate the edits made in the `{client.name}.config` file and resulting in the population of the `.env` with the specified HL7 environment variables defined above.
@@ -152,6 +153,17 @@ By default, this service is disabled. To activate it, users shall:
    ```bash
    docker exec "HL7_service_container" curl http://localhost:8000/config/
    ```
+
+**DETECTION_INFERENCE_COMMAND and MEASURES_INFERENCE_COMMAND**
+
+The `compose.hl7.yaml` includes a feature to define the product that we want to activate, this can be activated by 4 parameters:
+
+| Parameter                   | Default Value | Description                                                                                   |
+| --------------------------- | ------------- | --------------------------------------------------------------------------------------------- |
+| INCLUDE_DETECTIONS_FINDINGS | true          | Enable detections.                                                                            |
+| DETECTION_INFERENCE_COMMAND | smarturgences | Configure the product for detection. It can be: smarturgences, detection, smartchest, trauma. |
+| INCLUDE_MEASURES_FINDINGS   | true          | Enable measures                                                                               |
+| MEASURE_INFERENCE_COMMAND   | smartxpert    | Configure the product for measures. It can be: smartxpert, measures.                          |
 
 **HL7 LOAD CONFIGURATION AND TEMPLATE**
 
@@ -189,7 +201,7 @@ There
 > The configuration file defined in `LOAD_CONFIG_AT_INIT` has highest priority than the configuration defined in the `.env` file
 
 **HTML messages**:
-The report section within the HL7 message support the HTML encoding. The procedure is as follows:
+The report section within the HL7 message support the HTML encoding having formatting with no indents. The procedure is as follows:
 
 1. **Set `HL7_TCR_OUT_FORMAT`**, set the environment variable in `.env` file to `HTML`
 2. **Retrieve the HTML report**, once the user received back the HL7 message it will contain the HTML message in the report section `CRHTML`
@@ -203,7 +215,7 @@ To operate PACSOR, the following Docker Compose commands are used:
 - **Starting PACSOR**:
   - `docker compose up -d`
   - This command starts the PACSOR application in detached mode, allowing it to run in the background.
-- **Stopping PACSOR **:
+- **Stopping PACSOR**:
   - `docker compose down`
   - Use this command to stop and remove the PACSOR containers.
 - **Purging All Volumes**:
@@ -218,25 +230,9 @@ To operate PACSOR, the following Docker Compose commands are used:
   - `docker logs -f [container_name_or_id]`
   - To monitor real-time logs from a specific container, use this command. Replace `[container_name_or_id]` with the actual name or ID of the container you want to monitor.
 
-### Hybrid Mode
+### Manual Study Relaunch
 
-The latest HL7 update modularizes the reportor service by decoupling it with Milvue Suite. This separation streamlines the editing process for the first component, making it readily deployable in Milvue Suite's on-premise version. In this setup, the on-premise Milvue Suite instance sends prediction requests back to the cloud-based reportor. Reportor then relays these predictions to the PACSOR. Consequently, while predictions are processed locally, report generation remains in the cloud due to reportor's cloud deployment.
-
-To activate this functionality, a few modifications are required on both ends:
-
-- **on-premise side**
-  - The `clients.yaml` file shall define a token that exists on cloud and which contains the `u_filter Report`
-  - The `compose.base.yaml` file shall define `REPORTOR_URL` equal to the URL of the cloud report in the integrator service
-- **PACSOR side**
-  - the `.env` shall define `USE_PREDICTION_ID=true`
-  - the `compose.hl7.yaml` shall define `USE_PREDICTION_ID: ${USE_PREDICTION_ID}`
-
-The user can get the report by API:
-
-```bash
-<REPORTOR_URL>/report?study_prediction_id=<study_prediction_id>
-
-```
+This feature allows to manually relaunch a study that has already been sent to pacsor without running `docker compose down --volumes` by running the command on `http://admin:PORT/relaunch/{study_instance_uid}` for any exam that has been sent previously.
 
 ## Advanced Usage
 

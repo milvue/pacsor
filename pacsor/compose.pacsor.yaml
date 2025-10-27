@@ -88,6 +88,22 @@ services:
       retries: 10
     networks:
       - pacsor
+
+  admin:
+    image: "milvue/pacsor-admin:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    depends_on:
+      core:
+        condition: service_healthy
+    restart: on-failure
+    ports:
+      - "7000:8080"
+    healthcheck:
+      test: [ "CMD", "./healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - pacsor 
   
 volumes:
   inputs:

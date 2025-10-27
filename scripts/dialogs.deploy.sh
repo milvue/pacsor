@@ -92,9 +92,9 @@ function ask_env_url() {
             ;;
         *)
             urls=(
-                ["Azure-prod"]="https://k8s.predict.milvue.com"
-                ["Azure-preprod"]="https://azure-preprod.predict.milvue.com"
-                ["Azure-beta"]="https://azure-beta.predict.milvue.com"
+                ["Azure-prod"]="https://predict.milvue.com"
+                ["Azure-preprod"]="https://preprod.predict.milvue.com"
+                ["Azure-beta"]="https://beta.predict.milvue.com"
                 ["GCP-precert"]="https://precert.predict.milvue.com"
                 #["GCP-staging"]="https://staging.predict.milvue.com"
                 ["localor"]="http://integrator:8080"
