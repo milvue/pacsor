@@ -17,8 +17,11 @@
     "POPULATE_ORC": true,
     "POPULATE_ZDS": true,
     "INCLUDE_REPORT": true,
-    "INCLUDE_SMARTU_FINDINGS": true,
-    "INCLUDE_SMARTXPERT_FINDINGS": true,
+    "INCLUDE_DETECTIONS_FINDINGS": true,
+    "INCLUDE_MEASURES_FINDINGS": true,
     "SIUID_IN_OBX1": true,
-    "OBX_UPPERCASE": true
+    "OBX_UPPERCASE": true,
+    "DETECTION_INFERENCE_COMMAND": "smarturgences",
+    "MEASURES_INFERENCE_COMMAND": "smartxpert",
+    "USE_PREDICTION_ID": false
 }

@@ -53,7 +53,7 @@ services:
       API_URL: ${API_URL:?need valid URL}
       TOKEN: ${TOKEN:?can't be empty}
       CALLBACK_URLS: ${CALLBACK_URLS:-http://storescu:8000}
-      NO_DUPLICATE_UPLOAD: ${NO_DUPLICATE_UPLOAD:-false}
+      NO_DUPLICATE_UPLOAD: ${NO_DUPLICATE_UPLOAD:-true}
       INFERENCE_COMMANDS: ${INFERENCE_COMMANDS:-smarturgences,smartxpert}
       <<: *postgres-config
     depends_on:
