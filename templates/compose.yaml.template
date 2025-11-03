@@ -5,6 +5,9 @@ include:
     # Uncomment for sending HL7 messages
     #- pacsor/compose.hl7.yaml
 
+    # Uncomment for subscribing to report web pubsub
+    #- pacsor/compose.webps-subscriber.yaml
+
     # Network for localor
     #- override/compose.localor.pacsor.yaml
 
