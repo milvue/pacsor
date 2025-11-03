@@ -10,7 +10,9 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 | 2025-03-06 | 2.5.0   | support multiple products and new HL7 service                                                   | 2aa45208   |
 | 2025-03-21 | 2.5.1   | (hl7) add formating of report for hl7 html format                                               | 06903bb1   |
 | 2025-03-21 | 2.5.2   | Add Support to hybrid mode                                                                      | 9bafc995   |
-| 2025-10-27 | 2.6.0   | Enhances reliability enables the detection and measures inference commands. Removed hybrid mode | f2544465   |
+| 2025-10-24 | 2.6.0   | Enhances reliability enables the detection and measures inference commands. Removed hybrid mode | f2544465   |
+| 2025-10-27 | 2.6.1   | Fix study_instance_uid query from dicom_dir and fallback metadata query                         | 4f67fa3f   |
+| 2025-11-03 | 2.7.0   | Add pubusb subscriber component to retrieve reports from external providers                     | 9bed6dd1   |
 
 ## Prerequisites
 
@@ -139,6 +141,9 @@ By default, this service is disabled. To activate it, users shall:
 | HL7_INCLUDE_TCR           | false                                | A boolean indicating whether to include TechCare Report                                                                     |
 | HL7_TCR_URL               | https://app.report.milvue.com/report | The URL for the TCR.                                                                                                        |
 | HL7_TCR_OUT_FORMAT        | B64                                  | The output format for TechCare Report. It can be "B64", "PLAIN" or "HTML"                                                   |
+| WEBPS_ENABLE              | false                                | A boolean indicating whether to enable report pubsub subscriber.                                                            |
+| WEBPS_REPORTOR_URL        | empty                                | The URL used to get pubsub access.                                                                                          |
+| WEBPS_PROVIDERS           | empty                                | List of provider names to retrieve reports                                                                                  |
 
 4. **Re-run the setup script**: to actuate the edits made in the `{client.name}.config` file and resulting in the population of the `.env` with the specified HL7 environment variables defined above.
 
