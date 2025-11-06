@@ -1,0 +1,16 @@
+services:
+  wpbsb_subscriber:
+    image: "milvue/pacsor-wpbsb-subscriber:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    environment:
+      REPORTOR_URL: ${REPORTOR_URL}
+      TOKEN: ${TOKEN:?can't be empty}
+      PROVIDERS: ${PROVIDERS}
+      CALLBACK_URL: http://hl7:8000
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -f http://localhost:8080/healthcheck || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - pacsor

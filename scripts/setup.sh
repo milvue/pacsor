@@ -34,6 +34,9 @@ HL7_RECEIVING_APPLICATION=""
 HL7_RECEIVING_FACILITY=""
 HL7_RIS_IP=""
 HL7_RIS_PORT=""
+WEBPS_ENABLE="false"
+WEBPS_REPORTOR_URL=""
+WEBPS_PROVIDERS=""
 
 CONFIG_DIR="./scripts"
 
@@ -69,6 +72,9 @@ function save_config(){
     echo "HL7_RECEIVING_FACILITY=$HL7_RECEIVING_FACILITY" >> $config_file
     echo "HL7_RIS_IP=$HL7_RIS_IP" >> $config_file
     echo "HL7_RIS_PORT=$HL7_RIS_PORT" >> $config_file
+    echo "WEBPS_ENABLE=$WEBPS_ENABLE" >> $config_file
+    echo "WEBPS_REPORTOR_URL=$WEBPS_REPORTOR_URL" >> $config_file
+    echo "WEBPS_PROVIDERS=$WEBPS_PROVIDERS" >> $config_file
 }
 
 #now we search for all config files wich end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user anwser no then we exit 1. If user select a file, we load the content to set env vars.
@@ -129,7 +135,7 @@ function create_deploy(){
     CLIENT_CLEAN_NAME=$(echo $CLIENT_NAME | sed 's/\./-/g')
 
     #Export the variables
-    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL INF_COMM SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE HL7_LANGUAGE HL7_INCLUDE_TCR HL7_TCR_URL HL7_TCR_OUT_FORMAT HL7_RECEIVING_APPLICATION HL7_RECEIVING_FACILITY HL7_RIS_IP HL7_RIS_PORT
+    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL INF_COMM SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE HL7_LANGUAGE HL7_INCLUDE_TCR HL7_TCR_URL HL7_TCR_OUT_FORMAT HL7_RECEIVING_APPLICATION HL7_RECEIVING_FACILITY HL7_RIS_IP HL7_RIS_PORT WEBPS_REPORTOR_URL WEBPS_PROVIDERS
 
     # Create env-files directory if it does not exist
     mkdir -p env-files
@@ -158,6 +164,10 @@ function create_deploy(){
     # Activate the HL7 module if needed
     if [ "$HL7_ENABLE" = "true" ]; then
         sed -i 's/#- pacsor\/compose.hl7.yaml/- pacsor\/compose.hl7.yaml/' compose.yaml
+    fi
+
+    if [ "$WEBPS_ENABLE" = "true" ]; then
+        sed -i 's/#- pacsor\/compose.webps-subscriber.yaml/- pacsor\/compose.webps-subscriber.yaml/' compose.yaml
     fi
 
     # Activate the debug mode if needed
