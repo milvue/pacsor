@@ -13,6 +13,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 | 2025-10-24 | 2.6.0   | Enhances reliability enables the detection and measures inference commands. Removed hybrid mode | f2544465   |
 | 2025-10-27 | 2.6.1   | Fix study_instance_uid query from dicom_dir and fallback metadata query                         | 4f67fa3f   |
 | 2025-11-03 | 2.7.0   | Add pubusb subscriber component to retrieve reports from external providers                     | 9bed6dd1   |
+| 2025-11-06 | 2.8.0   | Fix output cleaning for studies with error                                                      | 7aaa7112   |
 
 ## Prerequisites
 
