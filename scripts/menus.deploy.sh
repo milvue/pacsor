@@ -39,7 +39,7 @@ function main_menu(){
         OPTION=$(whiptail --title "PACSOR settings menu" --backtitle "$MAIN_TITLE" --menu ""  --ok-button "select" --cancel-button "Exit without saving" $(( $LINES - 6 ))  $(( $COLUMNS - 40 )) $(( $LINES - 12 )) \
         "1" "Client name                   [$CLIENT_NAME]" \
         "2" "Client token                  [$CLIENT_TOKEN]" \
-        "3" "Environement URL              [$INTEGRATOR_URL]" \
+        "3" "Environment URL               [$INTEGRATOR_URL]" \
         "" "" \
         "4" "Set PACS AE Title             [$PACS_AET]" \
         "5" "Set PACS IP                   [$PACS_IP]" \
