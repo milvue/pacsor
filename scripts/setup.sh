@@ -23,6 +23,7 @@ HL7_LANGUAGE="FR"
 HL7_INCLUDE_TCR="false"
 HL7_TCR_URL="https://app.report.milvue.com/report"
 HL7_TCR_OUT_FORMAT="B64"
+DICOM_FILTERS="[]"
 
 # values to be set
 CLIENT_NAME=""
@@ -75,6 +76,7 @@ function save_config(){
     echo "WEBPS_ENABLE=$WEBPS_ENABLE" >> $config_file
     echo "WEBPS_REPORTOR_URL=$WEBPS_REPORTOR_URL" >> $config_file
     echo "WEBPS_PROVIDERS=$WEBPS_PROVIDERS" >> $config_file
+    echo "DICOM_FILTERS=$DICOM_FILTERS" >> $config_file
 }
 
 #now we search for all config files which end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user answer no then we exit 1. If user select a file, we load the content to set env vars.

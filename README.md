@@ -146,11 +146,15 @@ The field `CALLBACK_URLS` in the `core` section allows PACSOR to send results to
 ### Dicom filtering before upload (v2.9.0+)
 
 The field `DICOM_FILTERS` in the `core` section allows PACSOR to filter the dicoms to effectively send to the API and those to skip. The syntax is as following :
+
 `DICOM_FILTERS=[{"tag":{"group":"<tag_group>","element":"<tag_element>"},"pattern":"<regex_pattern>","should_match":<bool>}]`.
+
 This states that dicoms with tag ABCD,EFGH (group=ABCD, element=EFGH) that match (if should_match is false) or don’t match (if should_match is true) the regex_pattern, should be skipped by pacsor.
 
 Example:
+
 `DICOM_FILTER=[{"tag":{"group":"0010","element":"0010"},"pattern":"^TEST.*","should_match":false},{"tag":{"group":"0008","element":"0060"},"pattern":"^SR$$","should_match":true}]`
+
 According to the this setup, the following dicoms' behavior would be:
 
 - PatientName=TEST, Modality=SR : skipped
