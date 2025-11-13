@@ -147,7 +147,7 @@ The field `CALLBACK_URLS` in the `core` section allows PACSOR to send results to
 
 The field `DICOM_FILTERS` in the `core` section allows PACSOR to filter the dicoms to effectively send to the API and those to skip. The syntax is as following :
 
-`DICOM_FILTERS=[{"tag":{"group":"<tag_group>","element":"<tag_element>"},"pattern":"<regex_pattern>","should_match":<bool>}]`.
+`DICOM_FILTERS=[{"tag":{"group":"<tag_group>","element":"<tag_element>"},"pattern":"<regex_pattern>","should_match":<bool>}]`
 
 This states that dicoms with tag ABCD,EFGH (group=ABCD, element=EFGH) that match (if should_match is false) or don’t match (if should_match is true) the regex_pattern, should be skipped by pacsor.
 

@@ -23,7 +23,7 @@ HL7_LANGUAGE="FR"
 HL7_INCLUDE_TCR="false"
 HL7_TCR_URL="https://app.report.milvue.com/report"
 HL7_TCR_OUT_FORMAT="B64"
-DICOM_FILTERS="[]"
+DICOM_FILTERS='[]'
 
 # values to be set
 CLIENT_NAME=""
