@@ -14,6 +14,7 @@ function display_config(){
     msg+="    URL: $INTEGRATOR_URL\n"
     msg+="    Client token: $CLIENT_TOKEN\n"
     msg+="    Use signed URL: $USE_SIGNED_URL\n"
+    msg+="    Used dicom filters: $DICOM_FILTERS\n"
     msg+="  PACS settings:\n"
     msg+="    pacs_aet: $PACS_AET\n"
     msg+="    pacs_ip: $PACS_IP\n"
