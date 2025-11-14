@@ -54,7 +54,7 @@ function save_config(){
     echo "ISLOCALOR=$ISLOCALOR" >> $config_file
 }
 
-#now we search for all config files wich end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user anwser no then we exit 1. If user select a file, we load the content to set env vars.
+#now we search for all config files which end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user answer no then we exit 1. If user select a file, we load the content to set env vars.
 function load_config(){
     # Find all .config files in the CONFIG_DIR
     local config_files=($(ls $CONFIG_DIR/*.config 2>/dev/null))

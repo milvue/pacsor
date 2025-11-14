@@ -14,6 +14,7 @@ function display_config(){
     msg+="    URL: $INTEGRATOR_URL\n"
     msg+="    Client token: $CLIENT_TOKEN\n"
     msg+="    Use signed URL: $USE_SIGNED_URL\n"
+    msg+="    Used dicom filters: $DICOM_FILTERS\n"
     msg+="  PACS settings:\n"
     msg+="    pacs_aet: $PACS_AET\n"
     msg+="    pacs_ip: $PACS_IP\n"
@@ -59,7 +60,7 @@ function ask_version(){
     done
 }
 
-#we do the same with ask_env_url,  a predifined single radio list (using whiptail radiolist) of integrator urls, prodict.milvue.com, staging.milvue.com, dev.milvue.com, other. if other is selected, we ask for the url ask_integrator_url
+#we do the same with ask_env_url,  a predefined single radio list (using whiptail radiolist) of integrator urls, predict.milvue.com, staging.milvue.com, dev.milvue.com, other. if other is selected, we ask for the url ask_integrator_url
 function ask_env_url() {
     local wizard="$1"
     local product="$GLOBAL_PRODUCT"
@@ -106,7 +107,7 @@ function ask_env_url() {
 
     
     
-    local prompt="Select environement:"
+    local prompt="Select environment:"
     local default_status
     local choice
 

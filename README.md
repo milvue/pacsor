@@ -8,12 +8,13 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 | ---------- | ------- | ----------------------------------------------------------------------------------------------- | ---------- |
 | 2024-09-24 | 2.4.0   | fix output cleaning for multicore                                                               | cf0ba257   |
 | 2025-03-06 | 2.5.0   | support multiple products and new HL7 service                                                   | 2aa45208   |
-| 2025-03-21 | 2.5.1   | (hl7) add formating of report for hl7 html format                                               | 06903bb1   |
+| 2025-03-21 | 2.5.1   | (hl7) add formatting of report for hl7 html format                                              | 06903bb1   |
 | 2025-03-21 | 2.5.2   | Add Support to hybrid mode                                                                      | 9bafc995   |
 | 2025-10-24 | 2.6.0   | Enhances reliability enables the detection and measures inference commands. Removed hybrid mode | f2544465   |
 | 2025-10-27 | 2.6.1   | Fix study_instance_uid query from dicom_dir and fallback metadata query                         | 4f67fa3f   |
 | 2025-11-03 | 2.7.0   | Add pubusb subscriber component to retrieve reports from external providers                     | 9bed6dd1   |
 | 2025-11-06 | 2.8.0   | Fix output cleaning for studies with error                                                      | 7aaa7112   |
+| 2025-11-13 | 2.9.0   | Enable dicom filtering before upload                                                            | 0c3f15e6   |
 
 ## Prerequisites
 
@@ -23,7 +24,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 - Docker Engine : version 24.0.6
 - Docker Compose : version 2.29.6 [ (How to install a specific docker-compose version)](#1-how-to-install-a-specific-docker-compose-version)
 
-## Usage
+## Installation
 
 1. Clone the repository and navigate to the `milvue / pacsor` directory.
 
@@ -54,6 +55,32 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
    ```bash
    docker compose up -d
    ```
+
+## Running PACSOR
+
+To operate PACSOR, the following Docker Compose commands are used:
+
+- **Starting PACSOR**:
+  - `docker compose up -d`
+  - This command starts the PACSOR application in detached mode, allowing it to run in the background.
+- **Stopping PACSOR**:
+  - `docker compose down`
+  - Use this command to stop and remove the PACSOR containers.
+- **Purging All Volumes**:
+  - `docker compose down --volumes`
+  - This command will stop the PACSOR containers and remove all associated volumes. It's useful for a complete reset.
+- **Using a Specific `.env` File**:
+
+  - `docker compose --env-file .other.env.file up -d`
+  - If you need to start PACSOR with a different configuration, this command allows you to specify an alternative `.env` file.
+
+- **Viewing Logs**:
+  - `docker logs -f [container_name_or_id]`
+  - To monitor real-time logs from a specific container, use this command. Replace `[container_name_or_id]` with the actual name or ID of the container you want to monitor.
+
+### Manual Study Relaunch
+
+This feature allows to manually relaunch a study that has already been sent to pacsor without running `docker compose down --volumes` by running the command on `http://admin:PORT/relaunch/{study_instance_uid}` for any exam that has been sent previously.
 
 ## How to Update
 
@@ -115,6 +142,25 @@ The field `CALLBACK_URLS` in the `core` section allows PACSOR to send results to
 
 > **WARNING**:
 > If you create an other storescu service, you will need to edit `docker-compose.yml` and add manually a new service. You will need also to set the `PACS_IP`, `PACS_PORT`, `PACS_AET` in order to fit the needed configuration.
+
+### Dicom filtering before upload (v2.9.0+)
+
+The field `DICOM_FILTERS` in the `core` section allows PACSOR to filter the dicoms to effectively send to the API and those to skip. The syntax is as following :
+
+`DICOM_FILTERS=[{"tag":{"group":"<tag_group>","element":"<tag_element>"},"pattern":"<regex_pattern>","should_match":<bool>}]`
+
+This states that dicoms with tag ABCD,EFGH (group=ABCD, element=EFGH) that match (if should_match is false) or don’t match (if should_match is true) the regex_pattern, should be skipped by pacsor.
+
+Example:
+
+`DICOM_FILTER=[{"tag":{"group":"0010","element":"0010"},"pattern":"^TEST.*","should_match":false},{"tag":{"group":"0008","element":"0060"},"pattern":"^SR$$","should_match":true}]`
+
+According to the this setup, the following dicoms' behavior would be:
+
+- PatientName=TEST, Modality=SR : skipped
+- PatientName=NOT_A_TEST, Modality=SR : not skipped
+- PatientName=NOT_A_TEST, Modality=DX : skipped
+- PatientName=NOT_A_TEST, Modality=(not defined) : not skipped
 
 ### HL7 settings
 
@@ -194,8 +240,8 @@ The `compose.hl7.yaml` file has two fields which allow to load customizable temp
         |_ <custom_template>.py
    ```
 
-2. **Define pre-saved template**, define `LOAD_TEMPLATE_AT_INIT` in `compose.hl7.yaml` equal to the name of the py file (without extention) in the environment.
-3. **Define pre-saved configuration**, define `LOAD_CONFIG_AT_INIT` in `compose.hl7.yaml` equal to the name of the JSON file (without extention) in the environment. The configuration can be loaded real-time using the command
+2. **Define pre-saved template**, define `LOAD_TEMPLATE_AT_INIT` in `compose.hl7.yaml` equal to the name of the py file (without extension) in the environment.
+3. **Define pre-saved configuration**, define `LOAD_CONFIG_AT_INIT` in `compose.hl7.yaml` equal to the name of the JSON file (without extension) in the environment. The configuration can be loaded real-time using the command
 
 ```bash
  docker exec "HL7_service_container" curl -X POST http://localhost:8000/config/load/{JSON_file_without_extension}
@@ -213,32 +259,6 @@ The report section within the HL7 message support the HTML encoding having forma
 2. **Retrieve the HTML report**, once the user received back the HL7 message it will contain the HTML message in the report section `CRHTML`
 3. **De-code the HTML report**, if the user wants to read easily the HTML code, this is possible by [de-coding](https://www.base64decode.org) the portion of code after `^Base64^` and before `||||||`
 4. **Save the decoded HTML report**, the user shall copy-paste the html code and save it in a .html file
-
-## Running PACSOR
-
-To operate PACSOR, the following Docker Compose commands are used:
-
-- **Starting PACSOR**:
-  - `docker compose up -d`
-  - This command starts the PACSOR application in detached mode, allowing it to run in the background.
-- **Stopping PACSOR**:
-  - `docker compose down`
-  - Use this command to stop and remove the PACSOR containers.
-- **Purging All Volumes**:
-  - `docker compose down --volumes`
-  - This command will stop the PACSOR containers and remove all associated volumes. It's useful for a complete reset.
-- **Using a Specific `.env` File**:
-
-  - `docker compose --env-file .other.env.file up -d`
-  - If you need to start PACSOR with a different configuration, this command allows you to specify an alternative `.env` file.
-
-- **Viewing Logs**:
-  - `docker logs -f [container_name_or_id]`
-  - To monitor real-time logs from a specific container, use this command. Replace `[container_name_or_id]` with the actual name or ID of the container you want to monitor.
-
-### Manual Study Relaunch
-
-This feature allows to manually relaunch a study that has already been sent to pacsor without running `docker compose down --volumes` by running the command on `http://admin:PORT/relaunch/{study_instance_uid}` for any exam that has been sent previously.
 
 ## Advanced Usage
 

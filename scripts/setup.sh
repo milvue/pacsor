@@ -23,6 +23,7 @@ HL7_LANGUAGE="FR"
 HL7_INCLUDE_TCR="false"
 HL7_TCR_URL="https://app.report.milvue.com/report"
 HL7_TCR_OUT_FORMAT="B64"
+DICOM_FILTERS='[]'
 
 # values to be set
 CLIENT_NAME=""
@@ -75,9 +76,10 @@ function save_config(){
     echo "WEBPS_ENABLE=$WEBPS_ENABLE" >> $config_file
     echo "WEBPS_REPORTOR_URL=$WEBPS_REPORTOR_URL" >> $config_file
     echo "WEBPS_PROVIDERS=$WEBPS_PROVIDERS" >> $config_file
+    echo "DICOM_FILTERS=$DICOM_FILTERS" >> $config_file
 }
 
-#now we search for all config files wich end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user anwser no then we exit 1. If user select a file, we load the content to set env vars.
+#now we search for all config files which end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user answer no then we exit 1. If user select a file, we load the content to set env vars.
 function load_config(){
     # Find all .config files in the CONFIG_DIR
     local config_files=($(ls $CONFIG_DIR/*.config 2>/dev/null))
@@ -135,7 +137,7 @@ function create_deploy(){
     CLIENT_CLEAN_NAME=$(echo $CLIENT_NAME | sed 's/\./-/g')
 
     #Export the variables
-    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL INF_COMM SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE HL7_LANGUAGE HL7_INCLUDE_TCR HL7_TCR_URL HL7_TCR_OUT_FORMAT HL7_RECEIVING_APPLICATION HL7_RECEIVING_FACILITY HL7_RIS_IP HL7_RIS_PORT WEBPS_REPORTOR_URL WEBPS_PROVIDERS
+    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL INF_COMM SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE HL7_LANGUAGE HL7_INCLUDE_TCR HL7_TCR_URL HL7_TCR_OUT_FORMAT HL7_RECEIVING_APPLICATION HL7_RECEIVING_FACILITY HL7_RIS_IP HL7_RIS_PORT WEBPS_REPORTOR_URL WEBPS_PROVIDERS DICOM_FILTERS
 
     # Create env-files directory if it does not exist
     mkdir -p env-files
