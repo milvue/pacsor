@@ -186,10 +186,9 @@ By default, this service is disabled. To activate it, users shall:
 | HL7_RIS_PORT              | empty                                | The port number used to communicate with the RIS.                                                                           |
 | HL7_LANGUAGE              | FR                                   | The language code for HL7 messages. It can be "EN" or "FR". It only applies to MilvueSuite HL7 messages (not to the report) |
 | HL7_INCLUDE_TCR           | false                                | A boolean indicating whether to include TechCare Report                                                                     |
-| HL7_TCR_URL               | https://app.report.milvue.com/report | The URL for the TCR.                                                                                                        |
+| TCR_API_URL               | https://app.report.milvue.com        | The URL for the TCR.                                                                                                        |
 | HL7_TCR_OUT_FORMAT        | B64                                  | The output format for TechCare Report. It can be "B64", "PLAIN" or "HTML"                                                   |
-| WEBPS_ENABLE              | false                                | A boolean indicating whether to enable report pubsub subscriber.                                                            |
-| WEBPS_REPORTOR_URL        | empty                                | The URL used to get pubsub access.                                                                                          |
+| WEBPS_ENABLE              | false                                | A boolean indicating whether to enable report pubsub subscriber.                                                            |                                                                                         |
 | WEBPS_PROVIDERS           | empty                                | List of provider names to retrieve reports                                                                                  |
 
 4. **Re-run the setup script**: to actuate the edits made in the `{client.name}.config` file and resulting in the population of the `.env` with the specified HL7 environment variables defined above.

@@ -15,7 +15,7 @@ services:
       RIS_TIMEOUT: ${RIS_TIMEOUT:-15}
       INCLUDE_REPORT: ${INCLUDE_TECHCARE_REPORT:-false}
       API_URL: ${API_URL:?need valid URL}
-      REPORT_URL: ${TECHCARE_REPORT_URL:?need valid report URL}
+      TCR_API_URL: ${TCR_API_URL:?need valid report URL}
       TOKEN: ${TOKEN:?can't be empty}
       REPORT_FORMAT: ${TECHCARE_REPORT_FORMAT:-B64}
       DEF_PID_ISSUER: ${DEF_PID_ISSUER:-MILVUE}
