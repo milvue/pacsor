@@ -22,6 +22,5 @@
     "SIUID_IN_OBX1": true,
     "OBX_UPPERCASE": true,
     "DETECTION_INFERENCE_COMMAND": "smarturgences",
-    "MEASURES_INFERENCE_COMMAND": "smartxpert",
-    "USE_PREDICTION_ID": false
+    "MEASURES_INFERENCE_COMMAND": "smartxpert"
 }
