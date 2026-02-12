@@ -29,13 +29,12 @@ services:
       OBX_UPPERCASE: ${OBX_UPPERCASE:-true}
       HTTP_TIMEOUT: ${HTTP_TIMEOUT:-600}
       INCLUDE_DETECTIONS_FINDINGS: ${INCLUDE_DETECTIONS_FINDINGS:-true}
-      DETECTION_INFERENCE_COMMAND: ${DETECTION_INFERENCE_COMMAND:-"smarturgences"}
+      DETECTION_INFERENCE_COMMAND: ${DETECTION_INFERENCE_COMMAND:-smarturgences}
       INCLUDE_MEASURES_FINDINGS: ${INCLUDE_MEASURES_FINDINGS:-true}
-      MEASURES_INFERENCE_COMMAND: ${MEASURES_INFERENCE_COMMAND:-"smartxpert"}
+      MEASURES_INFERENCE_COMMAND: ${MEASURES_INFERENCE_COMMAND:-smartxpert}
+      WORKERS: 1
       #LOAD_TEMPLATE_AT_INIT: template
       #LOAD_CONFIG_AT_INIT: config
-      
-    command: ["hypercorn", "app.main:app", "--workers", "5", "--bind", "0.0.0.0:8000"] # Add this line to rise the number of workers from 1 to 5 (to better handle the Hl7 flow)
 
     volumes:
       - outputs:/outputs
