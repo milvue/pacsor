@@ -21,7 +21,7 @@ ISLOCALOR=false
 HL7_ENABLE="false"
 HL7_LANGUAGE="FR"
 HL7_INCLUDE_TCR="false"
-TCR_API_URL="https://app.report.milvue.com/report"
+TCR_API_URL="https://app.report.milvue.com"
 HL7_TCR_OUT_FORMAT="B64"
 DICOM_FILTERS='[]'
 
