@@ -13,10 +13,10 @@ HL7_MESSAGE: str = (
         "SEG_OBX1"
         "OBX||ST|milvue^SmartUrgences^LN||{study_metadata[Inference]}||||||F\r"
     )
-SEG_OBX: str = "OBX||{obx_2}|{section}^LN||{content}||||||F\r"
+SEG_OBX: str = "OBX||{obx_2}|{section}^LN||Text^^Base64^{content}||||||F\r"
 SEG_OBX_PLAIN: str = "OBX||{obx_2}|{section}^LN||{content}||||||F\r"
-SEG_OBX_B64: str = "OBX||{obx_2}|{section}^LN||^Text^^Base64^{content}||||||F\r"
-SEG_OBX_HTML: str = "OBX||ST|CRHTML^^MOTEURIA||^html^^Base64^{content}||||||F\r"
+SEG_OBX_B64: str = "OBX||{obx_2}|{section}^LN||Text^^Base64^{content}||||||F\r"
+SEG_OBX_HTML: str = "OBX||ED|CRHTML^^MOTEURIA||^text^^Base64^{content}||||||F\r"
 SEG_PID: str = (
         "PID|||{study_metadata[PatientID]}^^^{study_metadata[IssuerOfPatientID]}^"
         "PI||{study_metadata[PatientName]}||{study_metadata[PatientBirthDate]}|"
