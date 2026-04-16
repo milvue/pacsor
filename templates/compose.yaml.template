@@ -20,4 +20,7 @@ include:
     # uncomment for debug
     #- override/compose.debug.pacsor.yaml
     #- override/compose.debug.hl7.yaml
+
+    # tcr-core
+    #- pacsor/compose.tcr-core.yaml
     
