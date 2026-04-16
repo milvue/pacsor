@@ -75,6 +75,8 @@ services:
 
   admin:
     image: "milvue/pacsor-admin:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    environment:
+      TOKEN: ${TOKEN:?can't be empty}
     depends_on:
       core:
         condition: service_healthy
