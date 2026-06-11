@@ -21,6 +21,9 @@ include:
     #- override/compose.debug.pacsor.yaml
     #- override/compose.debug.hl7.yaml
 
+    # admin
+    #- pacsor/compose.admin.yaml
+
     # tcr-core
     #- pacsor/compose.tcr-core.yaml
     
