@@ -24,6 +24,7 @@ HL7_INCLUDE_TCR="false"
 TCR_API_URL="https://app.report.milvue.com"
 HL7_TCR_OUT_FORMAT="B64"
 DICOM_FILTERS='[]'
+PUBSUBOR_URL='https://pubsubor.milvue.com'
 
 # values to be set
 CLIENT_NAME=""
@@ -75,6 +76,7 @@ function save_config(){
     echo "WEBPS_ENABLE=$WEBPS_ENABLE" >> $config_file
     echo "WEBPS_PROVIDERS=$WEBPS_PROVIDERS" >> $config_file
     echo "DICOM_FILTERS=$DICOM_FILTERS" >> $config_file
+    echo "PUBSUBOR_URL=$PUBSUBOR_URL" >> $config_file
 }
 
 #now we search for all config files which end by .config in the CONFIG_DIR directory. if we find more than one file, we ask user if he wan't to load a specific file by using a radio list. If cancel or user answer no then we exit 1. If user select a file, we load the content to set env vars.
@@ -135,7 +137,7 @@ function create_deploy(){
     CLIENT_CLEAN_NAME=$(echo $CLIENT_NAME | sed 's/\./-/g')
 
     #Export the variables
-    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL INF_COMM SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE HL7_LANGUAGE HL7_INCLUDE_TCR TCR_API_URL HL7_TCR_OUT_FORMAT HL7_RECEIVING_APPLICATION HL7_RECEIVING_FACILITY HL7_RIS_IP HL7_RIS_PORT WEBPS_PROVIDERS DICOM_FILTERS
+    export CLIENT_NAME CLIENT_TOKEN VERSION_NAME CLIENT_CLEAN_NAME INTEGRATOR_URL USE_SIGNED_URL SENDER_CALLBACKS_URL INF_COMM SCP_PORT MILVUE_AET PACS_AET PACS_IP PACS_PORT SCP_CONFIG_PROFILE HL7_LANGUAGE HL7_INCLUDE_TCR TCR_API_URL HL7_TCR_OUT_FORMAT HL7_RECEIVING_APPLICATION HL7_RECEIVING_FACILITY HL7_RIS_IP HL7_RIS_PORT WEBPS_PROVIDERS DICOM_FILTERS PUBSUBOR_URL
 
     # Create env-files directory if it does not exist
     mkdir -p env-files
