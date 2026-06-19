@@ -1,0 +1,22 @@
+services:
+
+  storescp:
+    image: "milvue/pacsor-storescp:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    ports:
+      - "${PORT:-1040}:1040"
+    restart: always
+    environment:
+      CONFIG_PROFILE: ${CONFIG_PROFILE:-WithSC}
+      LOG_LEVEL: ${PACSOR_LOG_LEVEL:-warn}
+    volumes:
+      - inputs:/inputs
+      - type: bind
+        source: "../conf/filter.cfg"
+        target: /filter.cfg
+    healthcheck:
+      test: [ "CMD-SHELL", "echoscu -v storescp 1040" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - pacsor

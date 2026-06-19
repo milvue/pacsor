@@ -16,7 +16,9 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 | 2025-11-06 | 2.8.0   | Fix output cleaning for studies with error                                                      | 7aaa7112   |
 | 2025-11-13 | 2.9.0   | Enable dicom filtering before upload                                                            | 0c3f15e6   |
 | 2026-02-12 | 2.10.0  | Improve callback logs  <br> Fix dicom filter in multicore case  <br> Enable different OBX segments according to report format <br> Use TCR_API_URL env var and remove /report root <br> Limit instance upload rate <br> Remove PREDICTION_ID <br> Add retry in case of TimeoutReady                                                                                                             | b9b15a9a   |
-| 2026-14-08 | 2.10.1  | Fix hl7 optional segments + case where studies not on MVS                                       | 6f2dc31c   |
+| 2026-04-08 | 2.10.1  | Fix hl7 optional segments + case where studies not on MVS                                       | 6f2dc31c   |
+| 2026-06-08 | 2.10.2  | hl7 - add retries during GET JSON in case study is still running                                | cc958614   |
+| 2026-06-11 | 2.11.0  | Add tcr-core module + fix minor bugs in hl7                                                     | d2a150f7   |
 
 ## Prerequisites
 

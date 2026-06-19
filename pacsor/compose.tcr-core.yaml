@@ -1,0 +1,31 @@
+include:
+  - path:
+    - compose.storescp.yaml
+
+services:
+  core:
+    image: "milvue/pacsor-tcr-core:${DOCKER_IMAGE_TAG}"
+    environment:
+      PROVIDER_TOKEN: ${PROVIDER_TOKEN}
+      ORGANIZATION_ID: ${ORGANIZATION_ID}
+      TCR_API_URL: ${TCR_API_URL}
+      CALLBACK_URL: http://hl7:8000
+      DICOM_FILTERS: ${DICOM_FILTERS:-[]}
+    restart: on-failure
+    volumes:
+      - type: volume
+        source: inputs
+        target: /inputs
+    healthcheck:
+      test: [ "CMD", "./healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - pacsor
+
+volumes:
+  inputs:
+
+networks:
+  pacsor:
