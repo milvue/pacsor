@@ -84,7 +84,22 @@ To operate PACSOR, the following Docker Compose commands are used:
 
 ### Manual Study Relaunch
 
-This feature allows to manually relaunch a study that has already been sent to pacsor without running `docker compose down --volumes` by running the command on `http://admin:PORT/relaunch/{study_instance_uid}` for any exam that has been sent previously.
+A study already sent to pacsor can be rerun without `docker compose down --volumes`. The request no longer goes through an HTTP route on the deployment: it is published by Milvue on the `relaunch_study` Web PubSub hub, and the optional `admin` service subscribes to it on the deployment side.
+
+To make a deployment able to receive these requests:
+
+1. **Enable the service**: uncomment `- pacsor/compose.admin.yaml` in the `include` list of `compose.yaml`.
+
+2. **Check the `.env` file**: `admin` needs `TOKEN` and `PUBSUBOR_URL` (`https://pubsubor.milvue.com`, written by the setup script).
+
+3. **Restart PACSOR**: `docker compose up -d`.
+
+`admin` then joins the group derived from `TOKEN`, so it only receives the relaunch requests meant for this deployment, and forwards each of them to `core`, which asks the Milvue API to rerun the study. Check `docker logs -f admin` for the `joined group` line at startup and for one `Relaunch triggered for study` line per request.
+
+The port published by `admin` serves its healthcheck only; there is nothing to call by hand on it.
+
+> **WARNING**:
+> A relaunch reruns the study from the instances the API already holds; it uploads nothing. To send the images again, see [NO_DUPLICATE_UPLOAD](#no_duplicate_upload).
 
 ## How to Update
 
@@ -165,6 +180,54 @@ According to the this setup, the following dicoms' behavior would be:
 - PatientName=NOT_A_TEST, Modality=SR : not skipped
 - PatientName=NOT_A_TEST, Modality=DX : skipped
 - PatientName=NOT_A_TEST, Modality=(not defined) : not skipped
+
+### Duplicate skipping and upload rate
+
+Three fields of the `core` service govern how received instances are pushed to the API.
+
+| Parameter           | Default Value | Description                                                                 |
+| ------------------- | ------------- | --------------------------------------------------------------------------- |
+| NO_DUPLICATE_UPLOAD | true          | Skip an instance whose SOP Instance UID is already known to `core`          |
+| ASYNC_UPLOAD_LIMIT  | 10            | Number of instance uploads allowed to run at the same time (v2.10.0+)       |
+| ASYNC_UPLOAD_DELAY  | 30s           | Time an upload slot stays held after the upload completes (v2.10.0+)        |
+
+#### NO_DUPLICATE_UPLOAD
+
+With the default `true`, an instance whose SOP Instance UID already exists in the `core` database is not uploaded a second time: the incoming file is removed from the input volume and a `SkipDuplicate` entry is written to the logs. This protects against a PACS that re-sends the same instances, at the cost of making a resend a no-op.
+
+Set it to `false` when you need the same DICOMs to be uploaded again — typically to reprocess a study end to end by re-sending it from the PACS. The field is read from the `.env` file:
+
+```bash
+NO_DUPLICATE_UPLOAD=false
+```
+
+> **WARNING**:
+> In a multi-core setup, only `core` reads this field. The additional cores declared in `compose.multicore.yaml` always skip duplicates.
+
+Note that a [Manual Study Relaunch](#manual-study-relaunch) asks the API to rerun a study it already holds, so it does not depend on this field.
+
+#### ASYNC_UPLOAD_LIMIT and ASYNC_UPLOAD_DELAY
+
+These two fields work as a pair. An upload takes one of the `ASYNC_UPLOAD_LIMIT` slots before posting the instance, and the slot is released only `ASYNC_UPLOAD_DELAY` after the post returns. `ASYNC_UPLOAD_LIMIT` therefore sets how many uploads run at once, and the pair together caps the sustained rate at `ASYNC_UPLOAD_LIMIT` instances per `ASYNC_UPLOAD_DELAY`. With the defaults, a study arriving as a burst is uploaded 10 instances at a time, at most 10 instances per 30 seconds.
+
+Lower the limit or raise the delay when the link to the API is thin or when the API rate-limits bursts; do the reverse when instances pile up in the input volume on large studies and the network can absorb more.
+
+`ASYNC_UPLOAD_DELAY` is a Go duration: a number followed by its unit, such as `30s`, `1m` or `500ms`. A value that cannot be parsed is reported in the `core` logs and the default is used instead.
+
+Both fields keep their default unless they are declared, and they are not read from the `.env` file. A deployment that needs to change them adds them to the `environment` section of the service that uploads, in `pacsor/compose.pacsor.yaml`:
+
+```yaml
+  core:
+    environment:
+      GOMAXPROCS: 0
+      ASYNC_UPLOAD_LIMIT: 4
+      ASYNC_UPLOAD_DELAY: 1m
+```
+
+Then restart with `docker compose up -d`.
+
+> **WARNING**:
+> In a multi-core setup, each core uploads on its own and holds its own slots. Set the fields on the core concerned — the additional cores are declared in `compose.multicore.yaml`.
 
 ### HL7 settings
 
