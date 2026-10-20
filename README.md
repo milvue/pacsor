@@ -12,13 +12,14 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 | 2025-03-21 | 2.5.2   | Add Support to hybrid mode                                                                      | 9bafc995   |
 | 2025-10-24 | 2.6.0   | Enhances reliability enables the detection and measures inference commands. Removed hybrid mode | f2544465   |
 | 2025-10-27 | 2.6.1   | Fix study_instance_uid query from dicom_dir and fallback metadata query                         | 4f67fa3f   |
-| 2025-11-03 | 2.7.0   | Add pubusb subscriber component to retrieve reports from external providers                     | 9bed6dd1   |
+| 2025-11-03 | 2.7.0   | Add pubsub subscriber component to retrieve reports from external providers                     | 9bed6dd1   |
 | 2025-11-06 | 2.8.0   | Fix output cleaning for studies with error                                                      | 7aaa7112   |
 | 2025-11-13 | 2.9.0   | Enable dicom filtering before upload                                                            | 0c3f15e6   |
 | 2026-02-12 | 2.10.0  | Improve callback logs  <br> Fix dicom filter in multicore case  <br> Enable different OBX segments according to report format <br> Use TCR_API_URL env var and remove /report root <br> Limit instance upload rate <br> Remove PREDICTION_ID <br> Add retry in case of TimeoutReady                                                                                                             | b9b15a9a   |
 | 2026-04-08 | 2.10.1  | Fix hl7 optional segments + case where studies not on MVS                                       | 6f2dc31c   |
 | 2026-06-08 | 2.10.2  | hl7 - add retries during GET JSON in case study is still running                                | cc958614   |
 | 2026-06-11 | 2.11.0  | Add tcr-core module + fix minor bugs in hl7                                                     | d2a150f7   |
+| 2026-10-20 | 2.11.1  | Fix accession number retrieved from pubsub integration                                          | 83fae064   |
 
 ## Prerequisites
 
