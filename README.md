@@ -21,6 +21,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 | 2026-06-11 | 2.11.0  | Add tcr-core module + fix minor bugs in hl7                                                     | d2a150f7   |
 | 2026-10-20 | 2.11.1  | Fix accession number retrieved from pubsub integration                                          | 83fae064   |
 | 2026-10-23 | 2.11.2  | Optionally keep input modality for secondary captures outputs                                   | a49ba44e   |
+| 2026-10-28 | 2.11.3  | Prevent infinite study relaunches                                                               | 23e2b606   |
 
 ## Prerequisites
 
