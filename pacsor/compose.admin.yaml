@@ -5,6 +5,7 @@ services:
     environment:
       TOKEN: ${TOKEN:?can't be empty}
       PUBSUBOR_URL: ${PUBSUBOR_URL:?need valid URL}
+      ADDITIONAL_CORES: ${ADDITIONAL_CORES:-}
     depends_on:
       core:
         condition: service_healthy

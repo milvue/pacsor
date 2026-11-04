@@ -1,0 +1,22 @@
+services:
+  storescp:
+    environment:
+      SPOOL_DIR: /inputs/spool
+
+  dispatcher:
+    image: "milvue/pacsor-storescp:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    entrypoint: ["bash", "./dispatch.sh"]
+    restart: on-failure
+    environment:
+      SPOOL_DIR: /inputs/spool
+      SENDING_DIR: /inputs/sending
+      INSTANCES_PER_MINUTE: ${INSTANCES_PER_MINUTE:-10}
+      QUIET_PERIOD: ${QUIET_PERIOD:-30}
+      ADDITIONAL_CORES: ${ADDITIONAL_CORES:-}
+    depends_on:
+      core:
+        condition: service_healthy
+    volumes:
+      - inputs:/inputs
+    networks:
+      - pacsor

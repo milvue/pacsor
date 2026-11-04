@@ -20,6 +20,10 @@ services:
         TOKEN: ${TOKEN_1:?can't be empty}
         CALLBACK_URLS: ${CALLBACK_URLS_1:?can't be empty}
         INFERENCE_COMMANDS: ${INFERENCE_COMMANDS_1:-smarturgences,smartxpert}
+        ENABLE_PSEUDONYMIZATION: ${ENABLE_PSEUDONYMIZATION:-false}
+        PSEUDONYMIZATION_KEY: ${PSEUDONYMIZATION_KEY:-}
+        PSEUDONYMIZATION_ADDED_TAGS: ${PSEUDONYMIZATION_ADDED_TAGS:-[]}
+        PSEUDONYMIZATION_REMOVED_TAGS: ${PSEUDONYMIZATION_REMOVED_TAGS:-[]}
         <<: *postgres-config
       depends_on:
         core-db:
