@@ -22,6 +22,7 @@ PACSOR is an advanced Docker-based DICOM SCP/SCU application designed for effici
 | 2026-10-20 | 2.11.1  | Fix accession number retrieved from pubsub integration                                          | 83fae064   |
 | 2026-10-23 | 2.11.2  | Optionally keep input modality for secondary captures outputs                                   | a49ba44e   |
 | 2026-10-28 | 2.11.3  | Prevent infinite study relaunches                                                               | 23e2b606   |
+| 2026-11-02 | 3.0.0   | Remote administration: relaunch, callback replay, core enable/disable, purge, HL7 config update <br> Pseudonymization of identifying tags before upload <br> Throttled reception <br> HL7 return of the validated report and HL7 correction messages <br> A RIS rejection (NACK) is reported as an error <br> Non-ASCII patient names reach the RIS intact | efb943ed   |
 
 ## Prerequisites
 
@@ -85,9 +86,9 @@ To operate PACSOR, the following Docker Compose commands are used:
   - `docker logs -f [container_name_or_id]`
   - To monitor real-time logs from a specific container, use this command. Replace `[container_name_or_id]` with the actual name or ID of the container you want to monitor.
 
-### Manual Study Relaunch
+### Remote Administration (v3.0.0+)
 
-A study already sent to pacsor can be rerun without `docker compose down --volumes`. The request no longer goes through an HTTP route on the deployment: it is published by Milvue on the `relaunch_study` Web PubSub hub, and the optional `admin` service subscribes to it on the deployment side.
+Milvue can act on a deployment remotely, without logging into the site: the requests are published by Milvue on Web PubSub, and the optional `admin` service subscribes to them on the deployment side.
 
 To make a deployment able to receive these requests:
 
@@ -95,11 +96,21 @@ To make a deployment able to receive these requests:
 
 2. **Check the `.env` file**: `admin` needs `TOKEN` and `PUBSUBOR_URL` (`https://pubsubor.milvue.com`, written by the setup script).
 
-3. **Restart PACSOR**: `docker compose up -d`.
+3. **Multi-core only**: set `ADDITIONAL_CORES` (e.g. `core1`) in the `.env` file, so that the requests can reach the additional cores.
 
-`admin` then joins the group derived from `TOKEN`, so it only receives the relaunch requests meant for this deployment, and forwards each of them to `core`, which asks the Milvue API to rerun the study. Check `docker logs -f admin` for the `joined group` line at startup and for one `Relaunch triggered for study` line per request.
+4. **Restart PACSOR**: `docker compose up -d`.
 
-The port published by `admin` serves its healthcheck only; there is nothing to call by hand on it.
+`admin` then joins the groups derived from `TOKEN`, so it only receives the requests meant for this deployment. Check `docker logs -f admin` for the `joined group` lines at startup; each request is logged with the response of the service it was forwarded to.
+
+| Request                | Effect on the deployment                                                                                                                  |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Relaunch a study       | `core` asks the Milvue API to rerun a study it already holds. A study unknown to the API is not relaunched.                              |
+| Replay callbacks       | `core` downloads the results of a processed study again and sends them to the PACS and/or the RIS (`storescu`, `hl7`, `json`). No new prediction is run. |
+| Disable / enable core  | A disabled `core` skips and deletes every instance it receives; studies already in progress run to completion. A restart of `core` enables it again. |
+| Purge studies          | `core` deletes from its database the studies not updated for `PURGE_STUDIES_OLDER_THAN` (default `5m`). Studies still in progress are kept. |
+| Update HL7 config      | `hl7` applies new configuration values (e.g. `LOG_LEVEL`) and keeps them across restarts.                                                 |
+
+In a multi-core setup, a request targets one core (`core`, `core1`, ...) or all of them.
 
 > **WARNING**:
 > A relaunch reruns the study from the instances the API already holds; it uploads nothing. To send the images again, see [NO_DUPLICATE_UPLOAD](#no_duplicate_upload).
@@ -207,7 +218,7 @@ NO_DUPLICATE_UPLOAD=false
 > **WARNING**:
 > In a multi-core setup, only `core` reads this field. The additional cores declared in `compose.multicore.yaml` always skip duplicates.
 
-Note that a [Manual Study Relaunch](#manual-study-relaunch) asks the API to rerun a study it already holds, so it does not depend on this field.
+Note that a study relaunch through [Remote Administration](#remote-administration-v300) asks the API to rerun a study it already holds, so it does not depend on this field.
 
 #### ASYNC_UPLOAD_LIMIT and ASYNC_UPLOAD_DELAY
 
@@ -231,6 +242,64 @@ Then restart with `docker compose up -d`.
 
 > **WARNING**:
 > In a multi-core setup, each core uploads on its own and holds its own slots. Set the fields on the core concerned — the additional cores are declared in `compose.multicore.yaml`.
+
+### Throttled reception (v3.0.0+)
+
+By default, `storescp` hands every received instance to `core` immediately. To absorb a large backlog (e.g. a PACS re-sending months of studies), PACSOR can instead spool the received studies and feed them to `core` at a fixed rate.
+
+To enable:
+
+1. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.throttled.yaml`. It adds a `dispatcher` service and makes `storescp` write to the spool.
+
+2. **Tune the rate** (optional) in the `.env` file:
+
+   | Parameter            | Default Value | Description                                                                  |
+   | -------------------- | ------------- | ---------------------------------------------------------------------------- |
+   | INSTANCES_PER_MINUTE | 10            | Maximum number of instances sent to `core` per minute                       |
+   | QUIET_PERIOD         | 30            | Seconds without a new instance after which a study is considered complete   |
+
+3. **Restart PACSOR**: `docker compose up -d`.
+
+A study is dispatched once complete, all its instances in a row, then the dispatcher waits long enough to keep the rate. Studies are dispatched oldest first. `docker logs -f dispatcher` prints one line per study sent, with the number of studies left in the spool. In a multi-core setup, set `ADDITIONAL_CORES` (e.g. `core1`) in the `.env` file so that the dispatcher feeds every core.
+
+### Pseudonymization (v3.0.0+)
+
+With pseudonymization enabled, `core` pseudonymizes the identifying tags of every instance before uploading it, so the Milvue API never receives the patient identity. The results are re-identified on the deployment before being sent to the PACS and the RIS, which therefore receive the real values.
+
+Pseudonymized elements:
+
+- the identifying tags: patient name, ID, birth date and other patient identifiers, accession number, study ID, institution, station, operator and physician names, ...
+- every private element of the dataset.
+
+Pseudonyms are deterministic: the same value always gives the same pseudonym for a given key, so studies of the same patient can still be matched. The patient's age is kept, so age-dependent results are unaffected.
+
+To enable:
+
+1. **Generate a site key** (base64 of 32 random bytes) and add it to the `.env` file:
+
+   ```bash
+   echo "PSEUDONYMIZATION_KEY=$(openssl rand -base64 32)" >> .env
+   ```
+
+2. **Enable it** in the `.env` file:
+
+   ```bash
+   ENABLE_PSEUDONYMIZATION=true
+   ```
+
+3. **Restart PACSOR**: `docker compose up -d`.
+
+| Parameter                     | Default Value | Description                                                                                       |
+| ----------------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
+| ENABLE_PSEUDONYMIZATION       | false         | Enable pseudonymization                                                                           |
+| PSEUDONYMIZATION_KEY          | empty         | Site key, base64 of 32 bytes. Required when pseudonymization is enabled                           |
+| PSEUDONYMIZATION_ADDED_TAGS   | []            | Additional text tags to pseudonymize, e.g. `[{"group":"0008","element":"1030"}]`                  |
+| PSEUDONYMIZATION_REMOVED_TAGS | []            | Tags to leave in clear, public or private, e.g. `[{"group":"0008","element":"0080"}]`             |
+
+`core` refuses to start on a missing key or an invalid tag list. The pseudonymized instances carry `PatientIdentityRemoved = YES` and `MILVUE PACSOR PSEUDONYMIZATION` in `DeIdentificationMethod`; both are removed again from the results.
+
+> **WARNING**:
+> The results of a study can only be re-identified with the key that pseudonymized it. Back the key up with the site configuration, and do not change it while studies are in progress. In a multi-core setup, every core uses the same fields of the `.env` file.
 
 ### HL7 settings
 
@@ -260,6 +329,9 @@ By default, this service is disabled. To activate it, users shall:
 | HL7_TCR_OUT_FORMAT        | B64                                  | The output format for TechCare Report. It can be "B64", "PLAIN" or "HTML"                                                   |
 | WEBPS_ENABLE              | false                                | A boolean indicating whether to enable report pubsub subscriber.                                                            |                                                                                         |
 | WEBPS_PROVIDERS           | empty                                | List of provider names to retrieve reports                                                                                  |
+| ENABLE_HL7_RETURN         | false                                | A boolean indicating whether to send to the RIS the report validated by the user in TechCare Report (v3.0.0+)              |
+| ENABLE_HL7_CORRECTION     | false                                | A boolean indicating whether to send a correction message instead of a new full message when a study was already sent (v3.0.0+) |
+| CORRECTION_OMIT_ORC       | true                                 | A boolean indicating whether to omit the ORC segment from correction messages (v3.0.0+)                                     |
 
 4. **Re-run the setup script**: to actuate the edits made in the `{client.name}.config` file and resulting in the population of the `.env` with the specified HL7 environment variables defined above.
 
@@ -274,6 +346,13 @@ By default, this service is disabled. To activate it, users shall:
    ```bash
    docker exec "HL7_service_container" curl http://localhost:8000/config/
    ```
+
+**Report return and correction messages (v3.0.0+)**
+
+- **Report return** (`ENABLE_HL7_RETURN`): when a user validates a report in TechCare Report and sends it to the RIS, the report reaches the deployment through the report pubsub subscriber (`compose.webps-subscriber.yaml`, which must be enabled) and `hl7` sends it to the RIS as an ORU^R01 carrying the HTML report. The outcome (sent, or rejected by the RIS) is shown to the user in TechCare Report.
+- **Correction messages** (`ENABLE_HL7_CORRECTION`): every message sent is stored by TechCare Report. When results for a study already sent are produced again, `hl7` sends a correction message (`OBR-25 = C`, `OBX-11 = C`) holding only the OBX segments that changed or were removed, instead of a new full message. Nothing is sent when no OBX changed.
+
+A message rejected by the RIS (an ACK other than `AA` or `CA`) is logged as an error and is not resent; only connection failures are retried.
 
 **DETECTION_INFERENCE_COMMAND and MEASURES_INFERENCE_COMMAND**
 
