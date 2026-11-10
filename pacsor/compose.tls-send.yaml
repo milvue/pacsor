@@ -1,0 +1,20 @@
+services:
+  storescu:
+    environment:
+      PACS_IP: pacs-tls
+      PACS_PORT: 11112
+
+  pacs-tls:
+    image: "milvue/pacsor-storescu:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
+    entrypoint: ["bash", "./pacs-tls.sh"]
+    restart: always
+    environment:
+      PACS_IP: ${PACS_IP:?need valid PACS IP}
+      PACS_PORT: ${PACS_PORT:?need valid PACS PORT}
+    volumes:
+      - type: bind
+        source: "../conf/tls"
+        target: /certs
+        read_only: true
+    networks:
+      - pacsor

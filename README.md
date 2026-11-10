@@ -301,6 +301,47 @@ To enable:
 > **WARNING**:
 > The results of a study can only be re-identified with the key that pseudonymized it. Back the key up with the site configuration, and do not change it while studies are in progress. In a multi-core setup, every core uses the same fields of the `.env` file.
 
+### DICOM TLS (v3.1.0+)
+
+PACSOR can use DICOM TLS on each of its two local links, independently: when receiving studies from the modality, and when sending results to the PACS. Both follow the DICOM BCP 195 secure transport profile, TLS 1.2 minimum. Without it, both links use plain DICOM.
+
+The certificates go in `conf/tls/`, in PEM format:
+
+| File         | Used by       | Content                                                                                   |
+| ------------ | ------------- | ----------------------------------------------------------------------------------------- |
+| `pacsor.crt` | both links    | The certificate PACSOR presents to the modality and to the PACS                           |
+| `pacsor.key` | both links    | Its private key, without passphrase                                                       |
+| `pacs.crt`   | send link     | The certificates PACSOR trusts for the PACS: its own certificate, or the CA that signed it |
+
+The certificate and key are provided by the site, or generated on the deployment and given to the site's PACS administrator so that the PACS trusts it:
+
+```bash
+mkdir -p conf/tls
+openssl req -x509 -newkey rsa:2048 -nodes -days 1095 -subj "/CN=pacsor" \
+  -keyout conf/tls/pacsor.key -out conf/tls/pacsor.crt
+```
+
+#### Receiving over DICOM TLS
+
+1. **Add `pacsor.crt` and `pacsor.key`** to `conf/tls/`.
+2. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.tls-receive.yaml`.
+3. **Set the port** (optional) in the `.env` file: `TLS_PORT`, default `2762`.
+4. **Restart PACSOR**: `docker compose up -d`.
+
+The modality then sends to `TLS_PORT` with DICOM TLS, to the same AET. PACSOR does not ask the modality for a certificate. Plain DICOM keeps working on `PORT`, so modalities without TLS are unaffected.
+
+#### Sending to the PACS over DICOM TLS
+
+1. **Add `pacsor.crt`, `pacsor.key` and `pacs.crt`** to `conf/tls/`.
+2. **Set the PACS TLS port** in the `.env` file: `PACS_PORT` is the port where the PACS accepts DICOM TLS. `PACS_IP` and `PACS_AET` are unchanged.
+3. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.tls-send.yaml`. It adds a `pacs-tls` service, which opens the TLS connection to the PACS.
+4. **Restart PACSOR**: `docker compose up -d`.
+
+PACSOR presents `pacsor.crt` to the PACS, and sends nothing to a PACS whose certificate is not trusted by `pacs.crt`: the send fails and `docker compose logs -f pacs-tls` shows the reason.
+
+> **WARNING**:
+> In a multi-destination setup, only `storescu` goes through `pacs-tls`. An additional `storescu` service needs its own tunnel service.
+
 ### HL7 settings
 
 The `hl7` service, defined within `compose.hl7.yaml`, facilitates the sending of HL7 messages through `pacsor` logs and featuring also TechCare Report.

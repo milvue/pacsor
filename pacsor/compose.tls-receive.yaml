@@ -1,0 +1,13 @@
+services:
+  storescp:
+    ports:
+      - "${TLS_PORT:-2762}:2762"
+    environment:
+      ENABLE_TLS: "true"
+    volumes:
+      - type: bind
+        source: "../conf/tls"
+        target: /certs
+        read_only: true
+    healthcheck:
+      test: [ "CMD-SHELL", "echoscu storescp 1040 && echoscu +tla -ic storescp 2762" ]

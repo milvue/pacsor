@@ -1,5 +1,6 @@
 env-files/.env.*
 scripts/*.config
+conf/tls/
 .env
 compose.yaml
 start.sh
