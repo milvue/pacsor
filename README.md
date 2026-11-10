@@ -313,13 +313,29 @@ The certificates go in `conf/tls/`, in PEM format:
 | `pacsor.key` | both links    | Its private key, without passphrase                                                       |
 | `pacs.crt`   | send link     | The certificates PACSOR trusts for the PACS: its own certificate, or the CA that signed it |
 
-The certificate and key are provided by the site, or generated on the deployment and given to the site's PACS administrator so that the PACS trusts it:
+`pacsor.crt` lists the addresses the modalities and the PACS reach PACSOR on, as `IP:` or `DNS:` entries of its subject alternative names, for those that check them. It is either:
 
-```bash
-mkdir -p conf/tls
-openssl req -x509 -newkey rsa:2048 -nodes -days 1095 -subj "/CN=pacsor" \
-  -keyout conf/tls/pacsor.key -out conf/tls/pacsor.crt
-```
+- **self-signed**, generated on the deployment, then given to the PACS and modality administrators so that they import it:
+
+  ```bash
+  mkdir -p conf/tls
+  openssl req -x509 -newkey rsa:2048 -nodes -days 1095 -subj "/CN=pacsor" \
+    -addext "subjectAltName=IP:<PACSOR IP>" \
+    -keyout conf/tls/pacsor.key -out conf/tls/pacsor.crt
+  ```
+
+- **signed by the site's CA**, which the PACS and the modalities already trust: generate the key and a signing request, send `pacsor.csr` to the site, and put the certificate it returns in `conf/tls/pacsor.crt`.
+
+  ```bash
+  mkdir -p conf/tls
+  openssl req -new -newkey rsa:2048 -nodes -subj "/CN=pacsor" \
+    -addext "subjectAltName=IP:<PACSOR IP>" \
+    -keyout conf/tls/pacsor.key -out pacsor.csr
+  ```
+
+`pacs.crt` holds the PACS's own certificate, which then is the only one accepted, or the CA certificate that signed it. Several certificates can follow one another in the file, for instance the current and the next PACS certificate during a renewal.
+
+To renew a certificate, replace the file and restart the services that read it: `docker compose restart storescp pacs-tls`.
 
 #### Receiving over DICOM TLS
 
@@ -334,10 +350,17 @@ The modality then sends to `TLS_PORT` with DICOM TLS, to the same AET. PACSOR do
 
 1. **Add `pacsor.crt`, `pacsor.key` and `pacs.crt`** to `conf/tls/`.
 2. **Set the PACS TLS port** in the `.env` file: `PACS_PORT` is the port where the PACS accepts DICOM TLS. `PACS_IP` and `PACS_AET` are unchanged.
-3. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.tls-send.yaml`. It adds a `pacs-tls` service, which opens the TLS connection to the PACS.
-4. **Restart PACSOR**: `docker compose up -d`.
+3. **Check the PACS name** (optional) in the `.env` file: `PACS_TLS_CHECK_NAME=true`, default `false`. See below.
+4. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.tls-send.yaml`. It adds a `pacs-tls` service, which opens the TLS connection to the PACS.
+5. **Restart PACSOR**: `docker compose up -d`.
 
 PACSOR presents `pacsor.crt` to the PACS, and sends nothing to a PACS whose certificate is not trusted by `pacs.crt`: the send fails and `docker compose logs -f pacs-tls` shows the reason.
+
+With `PACS_TLS_CHECK_NAME=true`, the PACS certificate must also list `PACS_IP` in its subject alternative names: as an `IP:` entry when `PACS_IP` is an IP address, as a `DNS:` entry when it is a host name. Turn it on when `pacs.crt` is a CA certificate, so that only the certificate issued to the PACS is accepted, and not every certificate that CA signed. List the names of the PACS certificate with:
+
+```bash
+openssl x509 -in conf/tls/pacs.crt -noout -ext subjectAltName
+```
 
 > **WARNING**:
 > In a multi-destination setup, only `storescu` goes through `pacs-tls`. An additional `storescu` service needs its own tunnel service.
