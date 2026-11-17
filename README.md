@@ -365,11 +365,11 @@ openssl x509 -in conf/tls/pacs.crt -noout -ext subjectAltName
 > **WARNING**:
 > In a multi-destination setup, only `storescu` goes through `pacs-tls`. An additional `storescu` service needs its own tunnel service.
 
-### Returning results to the PACS of each site (v3.1.0+)
+### Serving several sites (v3.1.0+)
 
 One PACSOR can serve several sites, each with its own PACS. A site is told apart by the pair it sends with: its calling AE title, and the called AE title it calls PACSOR by. Give each site its own called AE title: the calling AE title is chosen by the site, and two sites can share one.
 
-`conf/return_pacs.yaml` declares one route per site, under the site's name. It holds no site by default (`{}`); replace it with the sites, then restart the services that read it: `docker compose restart storescu`, and `pacs-tls` with TLS sites.
+`conf/sites.yaml` declares the sites, each under its name. It holds no site by default (`{}`); replace it with the sites, then restart the services that read it: `docker compose restart core storescu`, plus `core1` in a multi-core setup and `pacs-tls` with TLS sites.
 
 ```yaml
 site_a:
@@ -400,13 +400,12 @@ A site name holds letters, digits, `_`, `.` and `-`, and names the site's sectio
 | `tls`         | Optional, `true` to send to this PACS over DICOM TLS             |
 | `sender_ips`  | Optional, the addresses and subnets the site sends from, e.g. `[10.1.0.5, 10.1.2.0/24]` |
 
-- A study's results go only to the PACS of the route matching its pair. A study sent again from another pair takes the pair of its last send.
-- A pair matching no route gets no results: `docker compose logs -f storescu` shows the pair.
-- A route with `sender_ips` gets no results for a study sent from another IP: `docker compose logs -f storescu` shows the pair and the IP PACSOR saw. A sender on the PACSOR host itself, or in another container, is seen as the Docker network gateway, not its own IP.
-- `storescu` does not start on an unknown key, on a route missing a field, on a `sender_ips` entry that is not an address or a subnet, or on a pair declared by two sites.
-- With no site, results go to `PACS_IP`, `PACS_PORT` and `PACS_AET`, which stay required in the `.env` file.
+- A study's results go only to the PACS of the site matching its pair. A study sent again from another pair takes the pair of its last send.
+- A study whose pair matches no site, or sent from an IP outside its site's `sender_ips`, is not processed: PACSOR deletes it on reception, and `docker compose logs -f core | grep SkipUndeclaredSender` shows the pair and the IP PACSOR saw. The sender gets no error. A sender on the PACSOR host itself, or in another container, is seen as the Docker network gateway, not its own IP.
+- `core` and `storescu` do not start on an unknown key, on a site missing a field, on a `sender_ips` entry that is not an address or a subnet, or on a pair declared by two sites.
+- With no site, nothing is dropped and results go to `PACS_IP`, `PACS_PORT` and `PACS_AET`, which stay required in the `.env` file.
 
-To send to some of these PACS over DICOM TLS, set `tls: true` on their routes and follow [Sending to the PACS over DICOM TLS](#sending-to-the-pacs-over-dicom-tls), skipping the `PACS_PORT` step: `storescu` does not start on a TLS route without `pacsor/compose.tls-send.yaml`. `pacs.crt` then holds the certificates of all these PACS, and `PACS_TLS_CHECK_NAME=true` makes each route accept only the certificate that names its own `pacs_ip`.
+To send to some of these PACS over DICOM TLS, set `tls: true` on their sites and follow [Sending to the PACS over DICOM TLS](#sending-to-the-pacs-over-dicom-tls), skipping the `PACS_PORT` step: `storescu` does not start on a TLS site without `pacsor/compose.tls-send.yaml`. `pacs.crt` then holds the certificates of all these PACS, and `PACS_TLS_CHECK_NAME=true` makes each site's tunnel accept only the certificate that names its own `pacs_ip`.
 
 ### HL7 settings
 

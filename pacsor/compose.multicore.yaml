@@ -34,6 +34,10 @@ services:
       volumes:
           - inputs:/inputs
           - outputs:/outputs
+          - type: bind
+            source: "../conf/sites.yaml"
+            target: /sites.yaml
+            read_only: true
       healthcheck:
         test: [ "CMD", "./healthcheck" ]
         interval: 5s

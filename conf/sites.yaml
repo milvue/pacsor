@@ -1,6 +1,7 @@
-# One route per site: a study's results go to the PACS of the site matching the calling
-# and called AE titles it was sent with. No site sends them to PACS_IP.
-# See "Returning results to the PACS of each site" in the README.
+# The sites PACSOR serves: a study's results go to the PACS of the site matching the calling
+# and called AE titles and the IP it was sent with, and a study no site sent is dropped.
+# No site: results go to PACS_IP and nothing is dropped.
+# See "Serving several sites" in the README.
 #
 # site_a:
 #   calling_aet: SITE_A_PACS

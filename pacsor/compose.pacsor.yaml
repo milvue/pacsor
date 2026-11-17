@@ -51,6 +51,10 @@ services:
     volumes:
         - inputs:/inputs
         - outputs:/outputs
+        - type: bind
+          source: "../conf/sites.yaml"
+          target: /sites.yaml
+          read_only: true
     healthcheck:
       test: [ "CMD", "./healthcheck" ]
       interval: 5s
@@ -70,8 +74,8 @@ services:
     volumes:
       - outputs:/outputs
       - type: bind
-        source: "../conf/return_pacs.yaml"
-        target: /return_pacs.yaml
+        source: "../conf/sites.yaml"
+        target: /sites.yaml
         read_only: true
     healthcheck:
       test: [ "CMD-SHELL", "curl -X GET storescu:8000/healthcheck" ]

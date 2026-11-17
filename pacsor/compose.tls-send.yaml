@@ -15,8 +15,8 @@ services:
       PACS_TLS_CHECK_NAME: ${PACS_TLS_CHECK_NAME:-false}
     volumes:
       - type: bind
-        source: "../conf/return_pacs.yaml"
-        target: /return_pacs.yaml
+        source: "../conf/sites.yaml"
+        target: /sites.yaml
         read_only: true
       - type: bind
         source: "../conf/tls"
