@@ -67,9 +67,12 @@ services:
       PACS_PORT: ${PACS_PORT:?need valid PACS PORT}
       PACS_AET: ${PACS_AET:?need valid PACS AET}
       MILVUE_AET: ${MILVUE_AET:-MILVUE}
-      RETURN_PACS: ${RETURN_PACS:-}
     volumes:
       - outputs:/outputs
+      - type: bind
+        source: "../conf/return_pacs.yaml"
+        target: /return_pacs.yaml
+        read_only: true
     healthcheck:
       test: [ "CMD-SHELL", "curl -X GET storescu:8000/healthcheck" ]
       interval: 5s

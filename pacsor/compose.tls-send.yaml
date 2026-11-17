@@ -13,8 +13,11 @@ services:
       PACS_IP: ${PACS_IP:?need valid PACS IP}
       PACS_PORT: ${PACS_PORT:?need valid PACS PORT}
       PACS_TLS_CHECK_NAME: ${PACS_TLS_CHECK_NAME:-false}
-      RETURN_PACS: ${RETURN_PACS:-}
     volumes:
+      - type: bind
+        source: "../conf/return_pacs.yaml"
+        target: /return_pacs.yaml
+        read_only: true
       - type: bind
         source: "../conf/tls"
         target: /certs

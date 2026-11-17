@@ -369,10 +369,21 @@ openssl x509 -in conf/tls/pacs.crt -noout -ext subjectAltName
 
 One PACSOR can serve several sites, each with its own PACS. A site is told apart by the pair it sends with: its calling AE title, and the called AE title it calls PACSOR by. Give each site its own called AE title: the calling AE title is chosen by the site, and two sites can share one.
 
-`RETURN_PACS` in the `.env` file declares one route per site, as a JSON list on one line:
+`conf/return_pacs.yaml` declares one route per site. It holds an empty list by default; replace it with the routes, then restart PACSOR (`docker compose up -d`):
 
-```bash
-RETURN_PACS=[{"calling_aet":"SITE_A_PACS","called_aet":"MILVUE_A","pacs_ip":"10.1.0.5","pacs_port":104,"pacs_aet":"SITE_A_PACS"},{"calling_aet":"SITE_B_PACS","called_aet":"MILVUE_B","pacs_ip":"10.2.0.5","pacs_port":2762,"pacs_aet":"SITE_B_PACS","tls":true}]
+```yaml
+- calling_aet: SITE_A_PACS
+  called_aet: MILVUE_A
+  pacs_ip: 10.1.0.5
+  pacs_port: 104
+  pacs_aet: SITE_A_PACS
+  sender_ips: [10.1.0.5]
+- calling_aet: SITE_B_PACS
+  called_aet: MILVUE_B
+  pacs_ip: 10.2.0.5
+  pacs_port: 2762
+  pacs_aet: SITE_B_PACS
+  tls: true
 ```
 
 | Field         | Content                                                         |
@@ -380,18 +391,18 @@ RETURN_PACS=[{"calling_aet":"SITE_A_PACS","called_aet":"MILVUE_A","pacs_ip":"10.
 | `calling_aet` | The AE title the site sends from                                 |
 | `called_aet`  | The AE title the site calls PACSOR by                            |
 | `pacs_ip`     | The IP or host name of the site's PACS                           |
-| `pacs_port`   | The port of the site's PACS, its DICOM TLS port with `"tls": true` |
+| `pacs_port`   | The port of the site's PACS, its DICOM TLS port with `tls: true`  |
 | `pacs_aet`    | The AE title of the site's PACS                                  |
 | `tls`         | Optional, `true` to send to this PACS over DICOM TLS             |
-| `sender_ips`  | Optional, the addresses and subnets the site sends from, e.g. `["10.1.0.5","10.1.2.0/24"]` |
+| `sender_ips`  | Optional, the addresses and subnets the site sends from, e.g. `[10.1.0.5, 10.1.2.0/24]` |
 
 - A study's results go only to the PACS of the route matching its pair. A study sent again from another pair takes the pair of its last send.
 - A pair matching no route gets no results: `docker compose logs -f storescu` shows the pair.
 - A route with `sender_ips` gets no results for a study sent from another IP: `docker compose logs -f storescu` shows the pair and the IP PACSOR saw. A sender on the PACSOR host itself, or in another container, is seen as the Docker network gateway, not its own IP.
-- `storescu` does not start on a route missing a field, on a `sender_ips` entry that is not an address or a subnet, or on a pair declared twice.
-- Without `RETURN_PACS`, results go to `PACS_IP`, `PACS_PORT` and `PACS_AET`, which stay required in the `.env` file.
+- `storescu` does not start on an unknown key, on a route missing a field, on a `sender_ips` entry that is not an address or a subnet, or on a pair declared twice.
+- With an empty list, results go to `PACS_IP`, `PACS_PORT` and `PACS_AET`, which stay required in the `.env` file.
 
-To send to some of these PACS over DICOM TLS, set `"tls": true` on their routes and follow [Sending to the PACS over DICOM TLS](#sending-to-the-pacs-over-dicom-tls), skipping the `PACS_PORT` step: `storescu` does not start on a TLS route without `pacsor/compose.tls-send.yaml`. `pacs.crt` then holds the certificates of all these PACS, and `PACS_TLS_CHECK_NAME=true` makes each route accept only the certificate that names its own `pacs_ip`.
+To send to some of these PACS over DICOM TLS, set `tls: true` on their routes and follow [Sending to the PACS over DICOM TLS](#sending-to-the-pacs-over-dicom-tls), skipping the `PACS_PORT` step: `storescu` does not start on a TLS route without `pacsor/compose.tls-send.yaml`. `pacs.crt` then holds the certificates of all these PACS, and `PACS_TLS_CHECK_NAME=true` makes each route accept only the certificate that names its own `pacs_ip`.
 
 ### HL7 settings
 
