@@ -67,6 +67,7 @@ services:
       PACS_PORT: ${PACS_PORT:?need valid PACS PORT}
       PACS_AET: ${PACS_AET:?need valid PACS AET}
       MILVUE_AET: ${MILVUE_AET:-MILVUE}
+      RETURN_PACS: ${RETURN_PACS:-}
     volumes:
       - outputs:/outputs
     healthcheck:

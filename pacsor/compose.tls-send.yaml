@@ -3,6 +3,7 @@ services:
     environment:
       PACS_IP: pacs-tls
       PACS_PORT: 11112
+      PACS_TLS_HOST: pacs-tls
 
   pacs-tls:
     image: "milvue/pacsor-storescu:${DOCKER_IMAGE_TAG:?give a valid tag of image to pull}"
@@ -12,6 +13,7 @@ services:
       PACS_IP: ${PACS_IP:?need valid PACS IP}
       PACS_PORT: ${PACS_PORT:?need valid PACS PORT}
       PACS_TLS_CHECK_NAME: ${PACS_TLS_CHECK_NAME:-false}
+      RETURN_PACS: ${RETURN_PACS:-}
     volumes:
       - type: bind
         source: "../conf/tls"
