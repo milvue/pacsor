@@ -1,17 +1,19 @@
-# One route per site: a study's results go to the PACS of the route matching the calling
-# and called AE titles it was sent with. An empty list sends them to PACS_IP.
+# One route per site: a study's results go to the PACS of the site matching the calling
+# and called AE titles it was sent with. No site sends them to PACS_IP.
 # See "Returning results to the PACS of each site" in the README.
 #
-# - calling_aet: SITE_A_PACS
+# site_a:
+#   calling_aet: SITE_A_PACS
 #   called_aet: MILVUE_A
 #   pacs_ip: 10.1.0.5
 #   pacs_port: 104
 #   pacs_aet: SITE_A_PACS
 #   sender_ips: [10.1.0.5, 10.1.2.0/24]  # optional
-# - calling_aet: SITE_B_PACS
+# site_b:
+#   calling_aet: SITE_B_PACS
 #   called_aet: MILVUE_B
 #   pacs_ip: 10.2.0.5
 #   pacs_port: 2762
 #   pacs_aet: SITE_B_PACS
 #   tls: true  # needs pacsor/compose.tls-send.yaml
-[]
+{}
