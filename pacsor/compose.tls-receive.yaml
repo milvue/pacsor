@@ -10,4 +10,4 @@ services:
         target: /certs
         read_only: true
     healthcheck:
-      test: [ "CMD-SHELL", "echoscu storescp 1040 && echoscu +tla -ic storescp 2762" ]
+      test: [ "CMD-SHELL", "echoscu storescp 1040 && grep -q ':0ACA [0-9A-F]*:0000 0A ' /proc/net/tcp /proc/net/tcp6" ]

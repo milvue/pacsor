@@ -307,11 +307,11 @@ PACSOR can use DICOM TLS on each of its two local links, independently: when rec
 
 The certificates go in `conf/tls/`, in PEM format:
 
-| File         | Used by       | Content                                                                                   |
-| ------------ | ------------- | ----------------------------------------------------------------------------------------- |
-| `pacsor.crt` | both links    | The certificate PACSOR presents to the modality and to the PACS                           |
-| `pacsor.key` | both links    | Its private key, without passphrase                                                       |
-| `pacs.crt`   | send link     | The certificates PACSOR trusts for the PACS: its own certificate, or the CA that signed it |
+| File         | Used by    | Content                                                                                                                   |
+| ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `pacsor.crt` | both links | The certificate PACSOR presents to the modality and to the PACS                                                           |
+| `pacsor.key` | both links | Its private key, without passphrase                                                                                       |
+| `pacs.crt`   | both links | The certificates PACSOR trusts for the PACS and for the modalities that send to it: their own, or the CA that signed them |
 
 `pacsor.crt` lists the addresses the modalities and the PACS reach PACSOR on, as `IP:` or `DNS:` entries of its subject alternative names, for those that check them. It is either:
 
@@ -333,18 +333,18 @@ The certificates go in `conf/tls/`, in PEM format:
     -keyout conf/tls/pacsor.key -out pacsor.csr
   ```
 
-`pacs.crt` holds the PACS's own certificate, which then is the only one accepted, or the CA certificate that signed it. Several certificates can follow one another in the file, for instance the current and the next PACS certificate during a renewal.
+`pacs.crt` holds the PACS's own certificate and those of the modalities that send over DICOM TLS, which then are the only ones accepted, or the CA certificate that signed them. A certificate trusted to send studies is also trusted as a PACS to return results to. Several certificates can follow one another in the file, for instance the current and the next PACS certificate during a renewal.
 
 To renew a certificate, replace the file and restart the services that read it: `docker compose restart storescp pacs-tls`.
 
 #### Receiving over DICOM TLS
 
-1. **Add `pacsor.crt` and `pacsor.key`** to `conf/tls/`.
+1. **Add `pacsor.crt`, `pacsor.key` and `pacs.crt`** to `conf/tls/`.
 2. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.tls-receive.yaml`.
 3. **Set the port** (optional) in the `.env` file: `TLS_PORT`, default `2762`.
 4. **Restart PACSOR**: `docker compose up -d`.
 
-The modality then sends to `TLS_PORT` with DICOM TLS, to the same AET. PACSOR does not ask the modality for a certificate. Plain DICOM keeps working on `PORT`, so modalities without TLS are unaffected.
+The modality then sends to `TLS_PORT` with DICOM TLS, to the same AET, and presents its certificate. PACSOR receives nothing from a modality whose certificate is missing or not trusted by `pacs.crt`: the association fails and `docker compose logs -f storescp` shows the reason. Plain DICOM keeps working on `PORT`, so modalities without TLS are unaffected.
 
 #### Sending to the PACS over DICOM TLS
 
