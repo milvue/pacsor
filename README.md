@@ -407,6 +407,24 @@ A site name holds letters, digits, `_`, `.` and `-`, and names the site's sectio
 
 To send to some of these PACS over DICOM TLS, set `tls: true` on their sites and follow [Sending to the PACS over DICOM TLS](#sending-to-the-pacs-over-dicom-tls), skipping the `PACS_PORT` step: `storescu` does not start on a TLS site without `pacsor/compose.tls-send.yaml`. `pacs.crt` then holds the certificates of all these PACS, and `PACS_TLS_CHECK_NAME=true` makes each site's tunnel accept only the certificate that names its own `pacs_ip`.
 
+### Cloud logs (v3.1.0+)
+
+`core` and `hl7` send their logs to Milvue with the site `TOKEN`, through `<API_URL>/logs`. Each setting picks one destination; both can be on.
+
+| Parameter  | Default Value | Description                       |
+| ---------- | ------------- | --------------------------------- |
+| AZURE_LOGS | true          | Send the logs to Milvue on Azure  |
+| GCP_LOGS   | false         | Send the logs to Milvue on GCP    |
+
+To switch, set both in the `.env` file, e.g. to send to both:
+
+```bash
+GCP_LOGS=true
+AZURE_LOGS=true
+```
+
+then restart the services: `docker compose up -d`. With both set to `false`, the logs stay on the console (`docker compose logs`).
+
 ### HL7 settings
 
 The `hl7` service, defined within `compose.hl7.yaml`, facilitates the sending of HL7 messages through `pacsor` logs and featuring also TechCare Report.
