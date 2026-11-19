@@ -16,6 +16,12 @@ include:
 
     # Multi-core
     #- pacsor/compose.multicore.yaml
+
+    # Uncomment to receive studies over DICOM TLS (certificates in conf/tls)
+    #- pacsor/compose.tls-receive.yaml
+
+    # Uncomment to send results to the PACS over DICOM TLS (certificates in conf/tls)
+    #- pacsor/compose.tls-send.yaml
             
     # uncomment for debug
     #- override/compose.debug.pacsor.yaml
