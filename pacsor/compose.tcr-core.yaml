@@ -17,7 +17,7 @@ services:
         source: inputs
         target: /inputs
     healthcheck:
-      test: [ "CMD", "./healthcheck" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8090/healthcheck" ]
       interval: 5s
       timeout: 5s
       retries: 10
