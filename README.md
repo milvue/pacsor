@@ -407,6 +407,8 @@ A site name holds letters, digits, `_`, `.` and `-`, and names the site's sectio
 
 To send to some of these PACS over DICOM TLS, set `tls: true` on their sites and follow [Sending to the PACS over DICOM TLS](#sending-to-the-pacs-over-dicom-tls), skipping the `PACS_PORT` step: `storescu` does not start on a TLS site without `pacsor/compose.tls-send.yaml`. `pacs.crt` then holds the certificates of all these PACS, and `PACS_TLS_CHECK_NAME=true` makes each site's tunnel accept only the certificate that names its own `pacs_ip`.
 
+When no site has `tls: true`, keep the line that includes `pacsor/compose.tls-send.yaml` commented out in `compose.yaml`: no site needs `pacs-tls`.
+
 ### Cloud logs (v3.1.0+)
 
 `core` and `hl7` send their logs to Milvue with the site `TOKEN`, through `<API_URL>/logs`. Each setting picks one destination; both can be on.
