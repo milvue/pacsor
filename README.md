@@ -342,9 +342,10 @@ To renew a certificate, replace the file and restart the services that read it: 
 1. **Add `pacsor.crt`, `pacsor.key` and `pacs.crt`** to `conf/tls/`.
 2. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.tls-receive.yaml`.
 3. **Set the port** (optional) in the `.env` file: `TLS_PORT`, default `2762`.
-4. **Restart PACSOR**: `docker compose up -d`.
+4. **Close plain DICOM** (optional) in the `.env` file: `ENABLE_PLAIN_DICOM=false`, default `true`.
+5. **Restart PACSOR**: `docker compose up -d`.
 
-The modality then sends to `TLS_PORT` with DICOM TLS, to the same AET, and presents its certificate. PACSOR receives nothing from a modality whose certificate is missing or not trusted by `pacs.crt`: the association fails and `docker compose logs -f storescp` shows the reason. Plain DICOM keeps working on `PORT`, so modalities without TLS are unaffected.
+The modality then sends to `TLS_PORT` with DICOM TLS, to the same AET, and presents its certificate. PACSOR receives nothing from a modality whose certificate is missing or not trusted by `pacs.crt`: the association fails and `docker compose logs -f storescp` shows the reason. Plain DICOM keeps working on `PORT`, so modalities without TLS are unaffected. With `ENABLE_PLAIN_DICOM=false`, PACSOR receives over DICOM TLS only and refuses plain DICOM on `PORT`.
 
 #### Sending to the PACS over DICOM TLS
 
