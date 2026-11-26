@@ -301,6 +301,132 @@ To enable:
 > **WARNING**:
 > The results of a study can only be re-identified with the key that pseudonymized it. Back the key up with the site configuration, and do not change it while studies are in progress. In a multi-core setup, every core uses the same fields of the `.env` file.
 
+### DICOM TLS (v3.1.0+)
+
+PACSOR can use DICOM TLS on each of its two local links, independently: when receiving studies from the modality, and when sending results to the PACS. Both follow the DICOM BCP 195 secure transport profile, TLS 1.2 minimum. Without it, both links use plain DICOM.
+
+The certificates go in `conf/tls/`, in PEM format:
+
+| File         | Used by    | Content                                                                                                                   |
+| ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `pacsor.crt` | both links | The certificate PACSOR presents to the modality and to the PACS                                                           |
+| `pacsor.key` | both links | Its private key, without passphrase                                                                                       |
+| `pacs.crt`   | both links | The certificates PACSOR trusts for the PACS and for the modalities that send to it: their own, or the CA that signed them |
+
+`pacsor.crt` lists the addresses the modalities and the PACS reach PACSOR on, as `IP:` or `DNS:` entries of its subject alternative names, for those that check them. It is either:
+
+- **self-signed**, generated on the deployment, then given to the PACS and modality administrators so that they import it:
+
+  ```bash
+  mkdir -p conf/tls
+  openssl req -x509 -newkey rsa:2048 -nodes -days 1095 -subj "/CN=pacsor" \
+    -addext "subjectAltName=IP:<PACSOR IP>" \
+    -keyout conf/tls/pacsor.key -out conf/tls/pacsor.crt
+  ```
+
+- **signed by the site's CA**, which the PACS and the modalities already trust: generate the key and a signing request, send `pacsor.csr` to the site, and put the certificate it returns in `conf/tls/pacsor.crt`.
+
+  ```bash
+  mkdir -p conf/tls
+  openssl req -new -newkey rsa:2048 -nodes -subj "/CN=pacsor" \
+    -addext "subjectAltName=IP:<PACSOR IP>" \
+    -keyout conf/tls/pacsor.key -out pacsor.csr
+  ```
+
+`pacs.crt` holds the PACS's own certificate and those of the modalities that send over DICOM TLS, which then are the only ones accepted, or the CA certificate that signed them. A certificate trusted to send studies is also trusted as a PACS to return results to. Several certificates can follow one another in the file, for instance the current and the next PACS certificate during a renewal.
+
+To renew a certificate, replace the file and restart the services that read it: `docker compose restart storescp pacs-tls`.
+
+#### Receiving over DICOM TLS
+
+1. **Add `pacsor.crt`, `pacsor.key` and `pacs.crt`** to `conf/tls/`.
+2. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.tls-receive.yaml`.
+3. **Set the port** (optional) in the `.env` file: `TLS_PORT`, default `2762`.
+4. **Restart PACSOR**: `docker compose up -d`.
+
+The modality then sends to `TLS_PORT` with DICOM TLS, to the same AET, and presents its certificate. PACSOR receives nothing from a modality whose certificate is missing or not trusted by `pacs.crt`: the association fails and `docker compose logs -f storescp` shows the reason. Plain DICOM keeps working on `PORT`, so modalities without TLS are unaffected.
+
+#### Sending to the PACS over DICOM TLS
+
+1. **Add `pacsor.crt`, `pacsor.key` and `pacs.crt`** to `conf/tls/`.
+2. **Set the PACS TLS port** in the `.env` file: `PACS_PORT` is the port where the PACS accepts DICOM TLS. `PACS_IP` and `PACS_AET` are unchanged.
+3. **Check the PACS name** (optional) in the `.env` file: `PACS_TLS_CHECK_NAME=true`, default `false`. See below.
+4. **Edit `compose.yaml`**: uncomment the line that includes `pacsor/compose.tls-send.yaml`. It adds a `pacs-tls` service, which opens the TLS connection to the PACS.
+5. **Restart PACSOR**: `docker compose up -d`.
+
+PACSOR presents `pacsor.crt` to the PACS, and sends nothing to a PACS whose certificate is not trusted by `pacs.crt`: the send fails and `docker compose logs -f pacs-tls` shows the reason.
+
+With `PACS_TLS_CHECK_NAME=true`, the PACS certificate must also list `PACS_IP` in its subject alternative names: as an `IP:` entry when `PACS_IP` is an IP address, as a `DNS:` entry when it is a host name. Turn it on when `pacs.crt` is a CA certificate, so that only the certificate issued to the PACS is accepted, and not every certificate that CA signed. List the names of the PACS certificate with:
+
+```bash
+openssl x509 -in conf/tls/pacs.crt -noout -ext subjectAltName
+```
+
+> **WARNING**:
+> In a multi-destination setup, only `storescu` goes through `pacs-tls`. An additional `storescu` service needs its own tunnel service.
+
+### Serving several sites (v3.1.0+)
+
+One PACSOR can serve several sites, each with its own PACS. A site is told apart by the pair it sends with: its calling AE title, and the called AE title it calls PACSOR by. Give each site its own called AE title: the calling AE title is chosen by the site, and two sites can share one.
+
+`conf/sites.yaml` declares the sites, each under its name. It holds no site by default (`{}`); replace it with the sites, then restart the services that read it: `docker compose restart core storescu`, plus `core1` in a multi-core setup and `pacs-tls` with TLS sites.
+
+```yaml
+site_a:
+  calling_aet: SITE_A_PACS
+  called_aet: MILVUE_A
+  pacs_ip: 10.1.0.5
+  pacs_port: 104
+  pacs_aet: SITE_A_PACS
+  sender_ips: [10.1.0.5]
+site_b:
+  calling_aet: SITE_B_PACS
+  called_aet: MILVUE_B
+  pacs_ip: 10.2.0.5
+  pacs_port: 2762
+  pacs_aet: SITE_B_PACS
+  tls: true
+```
+
+A site name holds letters, digits, `_`, `.` and `-`, and names the site's section in `pacs-tls`.
+
+| Field         | Content                                                         |
+| ------------- | --------------------------------------------------------------- |
+| `calling_aet` | The AE title the site sends from                                 |
+| `called_aet`  | The AE title the site calls PACSOR by                            |
+| `pacs_ip`     | The IP or host name of the site's PACS                           |
+| `pacs_port`   | The port of the site's PACS, its DICOM TLS port with `tls: true`  |
+| `pacs_aet`    | The AE title of the site's PACS                                  |
+| `tls`         | Optional, `true` to send to this PACS over DICOM TLS             |
+| `sender_ips`  | Optional, the addresses and subnets the site sends from, e.g. `[10.1.0.5, 10.1.2.0/24]` |
+
+- A study's results go only to the PACS of the site matching its pair. A study sent again from another pair takes the pair of its last send.
+- A study whose pair matches no site, or sent from an IP outside its site's `sender_ips`, is not processed: PACSOR deletes it on reception, and `docker compose logs -f core | grep SkipUndeclaredSender` shows the pair and the IP PACSOR saw. The sender gets no error. A sender on the PACSOR host itself, or in another container, is seen as the Docker network gateway, not its own IP.
+- `core` and `storescu` do not start on an unknown key, on a site missing a field, on a `sender_ips` entry that is not an address or a subnet, or on a pair declared by two sites.
+- With no site, nothing is dropped and results go to `PACS_IP`, `PACS_PORT` and `PACS_AET`, which stay required in the `.env` file.
+
+To send to some of these PACS over DICOM TLS, set `tls: true` on their sites and follow [Sending to the PACS over DICOM TLS](#sending-to-the-pacs-over-dicom-tls), skipping the `PACS_PORT` step: `storescu` does not start on a TLS site without `pacsor/compose.tls-send.yaml`. `pacs.crt` then holds the certificates of all these PACS, and `PACS_TLS_CHECK_NAME=true` makes each site's tunnel accept only the certificate that names its own `pacs_ip`.
+
+When no site has `tls: true`, keep the line that includes `pacsor/compose.tls-send.yaml` commented out in `compose.yaml`: no site needs `pacs-tls`.
+
+### Cloud logs (v3.1.0+)
+
+`core` and `hl7` send their logs to Milvue with the site `TOKEN`, through `<API_URL>/logs`. Each setting picks one destination; both can be on.
+
+| Parameter  | Default Value | Description                       |
+| ---------- | ------------- | --------------------------------- |
+| AZURE_LOGS | true          | Send the logs to Milvue on Azure  |
+| GCP_LOGS   | false         | Send the logs to Milvue on GCP    |
+
+To switch, set both in the `.env` file, e.g. to send to both:
+
+```bash
+GCP_LOGS=true
+AZURE_LOGS=true
+```
+
+then restart the services: `docker compose up -d`. With both set to `false`, the logs stay on the console (`docker compose logs`).
+
 ### HL7 settings
 
 The `hl7` service, defined within `compose.hl7.yaml`, facilitates the sending of HL7 messages through `pacsor` logs and featuring also TechCare Report.

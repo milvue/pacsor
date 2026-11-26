@@ -24,6 +24,8 @@ services:
         PSEUDONYMIZATION_KEY: ${PSEUDONYMIZATION_KEY:-}
         PSEUDONYMIZATION_ADDED_TAGS: ${PSEUDONYMIZATION_ADDED_TAGS:-[]}
         PSEUDONYMIZATION_REMOVED_TAGS: ${PSEUDONYMIZATION_REMOVED_TAGS:-[]}
+        GCP_LOGS: ${GCP_LOGS:-false}
+        AZURE_LOGS: ${AZURE_LOGS:-true}
         <<: *postgres-config
       depends_on:
         core-db:
@@ -34,6 +36,10 @@ services:
       volumes:
           - inputs:/inputs
           - outputs:/outputs
+          - type: bind
+            source: "../conf/sites.yaml"
+            target: /sites.yaml
+            read_only: true
       healthcheck:
         test: [ "CMD", "./healthcheck" ]
         interval: 5s
